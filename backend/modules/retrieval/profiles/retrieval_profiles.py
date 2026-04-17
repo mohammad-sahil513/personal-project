@@ -58,6 +58,39 @@ RETRIEVAL_PROFILES: dict[str, RetrievalPlan] = {
         source_enabled=True,
         guideline_enabled=True,
     ),
+    # Table-oriented sections produced by section planner.
+    "table": RetrievalPlan(
+        search_mode=SearchMode.HYBRID,
+        top_k=10,
+        guideline_top_k=4,
+        final_output_top_k=8,
+        min_confidence=0.55,
+        fallback_policy=FallbackPolicy.EXPAND_QUERY,
+        source_enabled=True,
+        guideline_enabled=True,
+    ),
+    # Diagram-oriented sections produced by section planner.
+    "diagram": RetrievalPlan(
+        search_mode=SearchMode.HYBRID,
+        top_k=10,
+        guideline_top_k=4,
+        final_output_top_k=8,
+        min_confidence=0.55,
+        fallback_policy=FallbackPolicy.EXPAND_QUERY,
+        source_enabled=True,
+        guideline_enabled=True,
+    ),
+    # API-oriented sections inferred by section planner title heuristics.
+    "api": RetrievalPlan(
+        search_mode=SearchMode.HYBRID,
+        top_k=10,
+        guideline_top_k=4,
+        final_output_top_k=8,
+        min_confidence=0.55,
+        fallback_policy=FallbackPolicy.EXPAND_QUERY,
+        source_enabled=True,
+        guideline_enabled=True,
+    ),
 }
 
 
