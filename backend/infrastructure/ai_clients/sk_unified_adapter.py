@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import concurrent.futures
 import threading
 from dataclasses import dataclass
 from typing import Any, Literal, cast
@@ -17,6 +18,58 @@ from semantic_kernel.contents import ChatHistory
 class AzureDeploymentConfig:
     alias: str
     deployment_name: str
+
+
+class _AsyncLoopThread:
+    """
+    Process-wide asyncio loop runner for blocking bridge calls.
+
+    Reusing one long-lived loop prevents "Event loop is closed" errors that can
+    happen when async SDK clients/cache objects outlive short-lived asyncio.run()
+    loops.
+    """
+
+    _lock = threading.Lock()
+    _thread: threading.Thread | None = None
+    _loop: asyncio.AbstractEventLoop | None = None
+    _ready = threading.Event()
+
+    @classmethod
+    def _ensure_started(cls) -> asyncio.AbstractEventLoop:
+        with cls._lock:
+            if cls._loop is not None and cls._thread is not None and cls._thread.is_alive():
+                return cls._loop
+
+            cls._ready.clear()
+
+            def _runner() -> None:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                cls._loop = loop
+                cls._ready.set()
+                loop.run_forever()
+
+            cls._thread = threading.Thread(
+                target=_runner,
+                name="sk-unified-adapter-loop",
+                daemon=True,
+            )
+            cls._thread.start()
+
+        cls._ready.wait(timeout=5)
+        if cls._loop is None:
+            raise RuntimeError("Failed to initialize background asyncio loop.")
+        return cls._loop
+
+    @classmethod
+    def run(cls, coro):
+        loop = cls._ensure_started()
+        future = asyncio.run_coroutine_threadsafe(coro, loop)
+        try:
+            return future.result()
+        except concurrent.futures.TimeoutError as exc:  # pragma: no cover
+            future.cancel()
+            raise RuntimeError("Timed out waiting for async LLM call.") from exc
 
 
 class AzureSemanticKernelTextAdapter:
@@ -240,26 +293,7 @@ class AzureSemanticKernelTextAdapter:
 
     @staticmethod
     def _run_async_blocking(coro):
-        try:
-            asyncio.get_running_loop()
-        except RuntimeError:
-            return asyncio.run(coro)
-
-        outcome: dict[str, Any] = {}
-
-        def _runner() -> None:
-            try:
-                outcome["result"] = asyncio.run(coro)
-            except Exception as exc:  # pragma: no cover
-                outcome["error"] = exc
-
-        thread = threading.Thread(target=_runner, daemon=True)
-        thread.start()
-        thread.join()
-
-        if "error" in outcome:
-            raise outcome["error"]
-        return outcome["result"]
+        return _AsyncLoopThread.run(coro)
 
     @staticmethod
     def _extract_usage(response: Any) -> dict[str, int]:
