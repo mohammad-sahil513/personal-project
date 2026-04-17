@@ -33,6 +33,9 @@ def build_template_compile_runtime_callable() -> Callable[..., Any]:
         import tempfile
         from pathlib import Path
         from backend.application.services.template_app_service import TemplateAppService
+        from backend.modules.template.services.template_artifact_service import (
+            TemplateArtifactService,
+        )
 
         _ = template_type
 
@@ -58,6 +61,13 @@ def build_template_compile_runtime_callable() -> Callable[..., Any]:
                 template_id=template_id,
                 name=filename,
                 version=version or "1.0.0",
+            )
+
+            artifact_root = Path(__file__).resolve().parents[3] / "artifacts"
+            TemplateArtifactService(artifact_root=artifact_root).persist(
+                template_definition=result.template_definition,
+                layout_manifest=None,
+                shell_docx_path=None,
             )
 
             compiled_artifacts = []
@@ -159,17 +169,65 @@ def build_template_resolve_runtime_callable() -> Callable[..., Any]:
         template_type: str | None = None,
         version: str | None = None,
     ):
-        _ = (filename, template_type, version)
-        raise ConfigurationError(
-            message=(
-                "Template resolution requires a compiled TemplateDefinition. "
-                "Use the template compile endpoint first, then resolve."
-            ),
-            error_code="TEMPLATE_RESOLVE_NOT_COMPILED",
-            details={
-                "template_id": template_id,
-                "hint": "POST /templates/{id}/compile first, then POST /templates/{id}/resolve",
-            },
+        _ = (filename, template_type)
+        from backend.application.services.template_app_service import TemplateAppService
+        from backend.modules.template.models.template_enums import TemplateType
+        from backend.modules.template.repositories.template_repository import (
+            TemplateRepository,
         )
+        from backend.modules.template.services.template_loader_service import (
+            TemplateLoaderService,
+        )
+        from backend.modules.template.services.template_resolver_service import (
+            TemplateResolverService,
+        )
+
+        app_service = TemplateAppService()
+        template = app_service.get_template(template_id)
+        resolved_version = version or template.version
+
+        if not resolved_version:
+            raise ConfigurationError(
+                message=(
+                    "Template resolution requires template version to load "
+                    "compiled artifacts."
+                ),
+                error_code="TEMPLATE_RESOLVE_VERSION_REQUIRED",
+                details={"template_id": template_id},
+            )
+
+        if str(template.status).upper() != "COMPILED":
+            raise ConfigurationError(
+                message=(
+                    "Template resolution requires a compiled TemplateDefinition. "
+                    "Use the template compile endpoint first, then resolve."
+                ),
+                error_code="TEMPLATE_RESOLVE_NOT_COMPILED",
+                details={
+                    "template_id": template_id,
+                    "template_status": template.status,
+                    "hint": (
+                        "POST /templates/{id}/compile first, "
+                        "then POST /templates/{id}/resolve"
+                    ),
+                },
+            )
+
+        bundle = TemplateLoaderService(
+            repository=TemplateRepository()
+        ).load_template(
+            template_type=TemplateType.CUSTOM,
+            template_id=template_id,
+            version=resolved_version,
+        )
+        resolved_sections = TemplateResolverService().resolve_template(
+            bundle.template_definition
+        )
+
+        return {
+            "resolved_sections": [
+                section.model_dump(mode="python") for section in resolved_sections
+            ]
+        }
 
     return _runner
