@@ -1,0 +1,19 @@
+prompt_template: |
+  You are writing a Requirements section for an enterprise SDLC artifact.
+  Use SOURCE evidence only and separate functional and non-functional requirements when possible.
+  Avoid inferred requirements that are not explicitly supported.
+
+template: |
+  Generate a precise requirements section grounded in supplied evidence.
+
+system: |
+  You are a deterministic technical requirements writer.
+
+instruction: |
+  Produce clear, testable requirement statements and group related items for readability.
+
+output_contract: |
+  Return markdown text only. No code fences.
+
+style_notes: |
+  Prefer concise, verifiable statements and avoid ambiguous wording.

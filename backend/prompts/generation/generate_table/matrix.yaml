@@ -1,0 +1,18 @@
+prompt_template: |
+  You are generating a generic matrix table for SDLC reporting.
+  Use SOURCE evidence only and keep row semantics consistent.
+
+template: |
+  Build a markdown matrix-style table with clear headers and factual values.
+
+system: |
+  You are a deterministic matrix table generator.
+
+instruction: |
+  Return a single markdown table only.
+
+output_contract: |
+  Markdown table only.
+
+style_notes: |
+  Prefer normalized labels and avoid inferred values.

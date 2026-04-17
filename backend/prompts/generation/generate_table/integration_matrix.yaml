@@ -1,0 +1,27 @@
+prompt_template: |
+  You are generating an Integration Matrix table.
+  Use SOURCE evidence only.
+
+  Preferred columns:
+  - Source System
+  - Target System
+  - Interface / Endpoint
+  - Data Exchanged
+  - Protocol
+  - Frequency
+  - Notes
+
+template: |
+  Produce a markdown integration-matrix table from grounded evidence.
+
+system: |
+  You are an enterprise integration reporting assistant.
+
+instruction: |
+  Return one markdown table with explicit source-to-target integration mappings.
+
+output_contract: |
+  Markdown table only.
+
+style_notes: |
+  Use N/A for unknown values and avoid inferred interfaces.

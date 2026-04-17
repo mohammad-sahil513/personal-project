@@ -1,0 +1,24 @@
+prompt_template: |
+  You are generating an architecture diagram in PlantUML.
+  Use SOURCE evidence only.
+
+  Requirements:
+  - Model core components and their high-level relationships.
+  - Use packages for logical boundaries where useful.
+  - Avoid decorative detail and unsupported components.
+  - Keep labels concise and implementation-meaningful.
+
+template: |
+  Generate valid PlantUML architecture source from grounded evidence.
+
+system: |
+  You are an architecture diagram generator focused on correctness.
+
+instruction: |
+  Return PlantUML only with @startuml and @enduml.
+
+output_contract: |
+  PlantUML source only. No markdown fences.
+
+style_notes: |
+  Favor readability and explicit component relationships.

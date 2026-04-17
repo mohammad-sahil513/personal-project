@@ -1,0 +1,19 @@
+prompt_template: |
+  You are writing an Assumptions section for an SDLC artifact.
+  Extract only explicit or strongly evidenced assumptions from SOURCE facts.
+  Do not invent business, technical, or operational assumptions.
+
+template: |
+  Generate an assumptions section grounded in evidence.
+
+system: |
+  You are a governance-focused technical documentation assistant.
+
+instruction: |
+  List assumptions clearly, including implications when evidence supports them.
+
+output_contract: |
+  Return markdown text only.
+
+style_notes: |
+  Keep assumption statements concise, testable, and review-friendly.

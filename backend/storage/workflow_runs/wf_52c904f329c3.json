@@ -1,0 +1,198 @@
+{
+  "workflow_run_id": "wf_52c904f329c3",
+  "status": "COMPLETED",
+  "current_phase": "TEMPLATE_PREPARATION",
+  "overall_progress_percent": 100,
+  "document_id": "doc_0460b2ef734e",
+  "template_id": "tpl_dummy_001",
+  "output_id": "out_999",
+  "created_at": "2026-04-16T09:08:40.933009+00:00",
+  "updated_at": "2026-04-16T09:08:41.234820+00:00",
+  "started_at": "2026-04-16T09:08:40.954086+00:00",
+  "completed_at": "2026-04-16T09:08:41.234820+00:00",
+  "phases": [
+    {
+      "phase": "INPUT_PREPARATION",
+      "status": "COMPLETED",
+      "progress_percent": 100,
+      "weight": 5
+    },
+    {
+      "phase": "INGESTION",
+      "status": "COMPLETED",
+      "progress_percent": 100,
+      "weight": 35
+    },
+    {
+      "phase": "TEMPLATE_PREPARATION",
+      "status": "NOT_STARTED",
+      "progress_percent": 0,
+      "weight": 10
+    },
+    {
+      "phase": "SECTION_PLANNING",
+      "status": "NOT_STARTED",
+      "progress_percent": 0,
+      "weight": 5
+    },
+    {
+      "phase": "RETRIEVAL",
+      "status": "NOT_STARTED",
+      "progress_percent": 0,
+      "weight": 15
+    },
+    {
+      "phase": "GENERATION",
+      "status": "NOT_STARTED",
+      "progress_percent": 0,
+      "weight": 20
+    },
+    {
+      "phase": "ASSEMBLY_VALIDATION",
+      "status": "NOT_STARTED",
+      "progress_percent": 0,
+      "weight": 5
+    },
+    {
+      "phase": "RENDER_EXPORT",
+      "status": "NOT_STARTED",
+      "progress_percent": 0,
+      "weight": 5
+    }
+  ],
+  "execution_refs": {
+    "INGESTION": "exec_778123c56a33"
+  },
+  "section_plan": {
+    "template_id": "tpl_dummy_001",
+    "total_sections": 1,
+    "sections": [
+      {
+        "section_id": "sec_01",
+        "title": "Dummy",
+        "execution_order": 1,
+        "generation_strategy": "summarize_text",
+        "retrieval_profile": "default"
+      }
+    ]
+  },
+  "section_progress": {
+    "total_sections": 1,
+    "completed_sections": 1,
+    "running_sections": 0,
+    "failed_sections": 0,
+    "sections": [
+      {
+        "section_id": "sec_01",
+        "title": "Dummy",
+        "execution_order": 1,
+        "generation_strategy": "summarize_text",
+        "retrieval_profile": "default",
+        "status": "COMPLETED",
+        "progress_percent": 100,
+        "dependencies": [],
+        "metadata": {}
+      }
+    ]
+  },
+  "section_retrieval_results": {
+    "sec_01": "Mock Evidence Data"
+  },
+  "section_generation_results": {
+    "sec_01": {
+      "output_type": "markdown",
+      "content": "# Dummy Content",
+      "raw_result": {}
+    }
+  },
+  "assembled_document": {
+    "title": "Compiled Doc",
+    "total_sections": 1,
+    "blocks": [
+      {
+        "type": "markdown",
+        "content": "hello"
+      }
+    ]
+  },
+  "observability_summary": {
+    "workflow_run_id": "wf_52c904f329c3",
+    "document_id": "doc_0460b2ef734e",
+    "template_id": "tpl_dummy_001",
+    "status": "RUNNING",
+    "current_phase": "TEMPLATE_PREPARATION",
+    "stage_statuses": {
+      "input_preparation": {
+        "status": "COMPLETED",
+        "progress_percent": 100,
+        "started_at": null,
+        "completed_at": null,
+        "duration_ms": null
+      },
+      "ingestion": {
+        "status": "COMPLETED",
+        "progress_percent": 100,
+        "started_at": null,
+        "completed_at": null,
+        "duration_ms": null
+      },
+      "template_preparation": {
+        "status": "NOT_STARTED",
+        "progress_percent": 0,
+        "started_at": null,
+        "completed_at": null,
+        "duration_ms": null
+      },
+      "section_planning": {
+        "status": "NOT_STARTED",
+        "progress_percent": 0,
+        "started_at": null,
+        "completed_at": null,
+        "duration_ms": null
+      },
+      "retrieval": {
+        "status": "NOT_STARTED",
+        "progress_percent": 0,
+        "started_at": null,
+        "completed_at": null,
+        "duration_ms": null
+      },
+      "generation": {
+        "status": "NOT_STARTED",
+        "progress_percent": 0,
+        "started_at": null,
+        "completed_at": null,
+        "duration_ms": null
+      },
+      "assembly_validation": {
+        "status": "NOT_STARTED",
+        "progress_percent": 0,
+        "started_at": null,
+        "completed_at": null,
+        "duration_ms": null
+      },
+      "render_export": {
+        "status": "NOT_STARTED",
+        "progress_percent": 0,
+        "started_at": null,
+        "completed_at": null,
+        "duration_ms": null
+      }
+    },
+    "cost_totals": {
+      "ingestion": 0.0,
+      "retrieval": 0.0,
+      "generation": 0.0,
+      "assembly": 0.0,
+      "export": 0.0,
+      "document_total": 0.0
+    },
+    "per_section_totals": {
+      "retrieval": {},
+      "generation": {}
+    },
+    "updated_at": "2026-04-16T09:08:41.221704+00:00"
+  },
+  "warnings": [],
+  "errors": []
+}

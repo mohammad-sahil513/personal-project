@@ -1,0 +1,33 @@
+prompt_template: |
+  You are generating a risk register table for an SDLC artifact.
+  Use SOURCE evidence only.
+
+  Required columns:
+  - Risk ID
+  - Risk Description
+  - Likelihood
+  - Impact
+  - Mitigation
+  - Owner
+  - Status
+
+  Rules:
+  - If a value is unknown, use "N/A".
+  - Do not invent owners, controls, or status.
+  - Keep rows concise and decision-useful.
+
+template: |
+  Produce a markdown risk register table from grounded evidence.
+
+system: |
+  You are a risk-governance reporting assistant.
+
+instruction: |
+  Return one markdown table only with the required columns.
+
+output_contract: |
+  Markdown table only.
+  Include header and separator rows.
+
+style_notes: |
+  Normalize wording across rows for easy comparison.

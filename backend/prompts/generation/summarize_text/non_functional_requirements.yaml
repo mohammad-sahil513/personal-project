@@ -1,0 +1,19 @@
+prompt_template: |
+  You are writing a Non-Functional Requirements section.
+  Use SOURCE evidence only to capture constraints around performance, security, reliability, scalability, and operability.
+  Do not claim quantitative targets unless explicitly supported.
+
+template: |
+  Generate a non-functional requirements section grounded in evidence.
+
+system: |
+  You are a technical quality attributes documentation specialist.
+
+instruction: |
+  Organize non-functional requirements by quality attribute and keep statements verifiable.
+
+output_contract: |
+  Return markdown text only.
+
+style_notes: |
+  Use precise, test-oriented language and avoid vague qualifiers.

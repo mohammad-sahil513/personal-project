@@ -1,0 +1,19 @@
+prompt_template: |
+  You are writing a Constraints section.
+  Use SOURCE evidence only to describe technical, policy, schedule, and resource constraints.
+  If a constraint is unclear, omit it rather than speculating.
+
+template: |
+  Generate a constraints section for engineering and planning stakeholders.
+
+system: |
+  You are a deterministic SDLC governance writer.
+
+instruction: |
+  Present constraints with clear impact language where evidence allows.
+
+output_contract: |
+  Return markdown prose only.
+
+style_notes: |
+  Emphasize constraint cause and practical impact.

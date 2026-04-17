@@ -1,0 +1,12 @@
+{
+  "output_id": "out_bc94fe80b803",
+  "workflow_run_id": "wkflw_999",
+  "status": "READY",
+  "output_type": "DOCUMENT",
+  "format": "DOCX",
+  "artifact_path": "backend\\storage\\outputs\\wkflw_999\\out_bc94fe80b803.docx",
+  "metadata": {},
+  "errors": [],
+  "created_at": "2026-04-16T06:57:21.775851+00:00",
+  "updated_at": "2026-04-16T06:57:21.824563+00:00"
+}

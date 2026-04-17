@@ -1,0 +1,19 @@
+prompt_template: |
+  You are writing an Integration Points section.
+  Use SOURCE evidence only to describe system-to-system interfaces, protocols, and data exchange touchpoints.
+  Do not infer undocumented integrations.
+
+template: |
+  Generate an integration-points section from grounded evidence.
+
+system: |
+  You are an enterprise integration architecture writer.
+
+instruction: |
+  Describe each integration point with purpose and interaction intent where evidence permits.
+
+output_contract: |
+  Return markdown text only.
+
+style_notes: |
+  Favor explicit interface naming and concise interaction wording.

@@ -1,0 +1,19 @@
+prompt_template: |
+  You are writing a System Design section.
+  Use SOURCE evidence only to explain architecture choices, interfaces, and major design considerations.
+  Do not invent design decisions not supported by evidence.
+
+template: |
+  Generate a system-design section grounded in supplied evidence.
+
+system: |
+  You are a deterministic system design documentation specialist.
+
+instruction: |
+  Present design structure, key interactions, and rationale signals with implementation clarity.
+
+output_contract: |
+  Return markdown text only.
+
+style_notes: |
+  Prefer explicit design terms and avoid speculative recommendations.

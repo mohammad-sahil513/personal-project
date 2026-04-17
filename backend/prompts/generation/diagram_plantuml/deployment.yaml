@@ -1,0 +1,23 @@
+prompt_template: |
+  You are generating a deployment diagram in PlantUML.
+  Use SOURCE evidence only.
+
+  Requirements:
+  - Show runtime nodes/environments and hosted components.
+  - Represent key communication paths when evidenced.
+  - Keep topology clear and avoid speculative infrastructure.
+
+template: |
+  Generate valid PlantUML deployment source from grounded evidence.
+
+system: |
+  You are a deployment-topology diagram generator.
+
+instruction: |
+  Return PlantUML only with @startuml and @enduml.
+
+output_contract: |
+  PlantUML source only.
+
+style_notes: |
+  Favor explicit node naming and clean topology layout.

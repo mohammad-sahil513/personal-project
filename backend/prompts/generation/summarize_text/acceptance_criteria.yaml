@@ -1,0 +1,19 @@
+prompt_template: |
+  You are writing an Acceptance Criteria section.
+  Use SOURCE evidence only and express criteria in clear, verifiable terms.
+  Do not introduce test conditions not grounded in evidence.
+
+template: |
+  Generate an acceptance-criteria section from grounded evidence.
+
+system: |
+  You are a quality-focused requirements validation writer.
+
+instruction: |
+  Present acceptance criteria in concise bullet form with measurable language when possible.
+
+output_contract: |
+  Return markdown text only.
+
+style_notes: |
+  Prefer objective pass/fail phrasing over narrative prose.

@@ -1,0 +1,26 @@
+prompt_template: |
+  You are generating an NFR Matrix table.
+  Use SOURCE evidence only and do not invent quality targets.
+
+  Preferred columns:
+  - Quality Attribute
+  - Requirement
+  - Target / Threshold
+  - Measurement Method
+  - Status
+  - Evidence
+
+template: |
+  Produce a markdown non-functional requirements matrix from grounded evidence.
+
+system: |
+  You are a quality attributes reporting assistant.
+
+instruction: |
+  Return one markdown table only with concise, verifiable row entries.
+
+output_contract: |
+  Markdown table only.
+
+style_notes: |
+  Keep status labels normalized and values audit-friendly.

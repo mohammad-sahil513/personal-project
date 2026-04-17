@@ -1,0 +1,20 @@
+prompt_template: |
+  You are writing the Overview section for an enterprise SDLC artifact.
+  Use SOURCE evidence as ground truth and explain the system scope, intent, and core flow.
+  Keep statements implementation-relevant and verifiable.
+
+template: |
+  Generate a concise, factual overview section from supplied evidence only.
+
+system: |
+  You are a deterministic enterprise technical writer.
+
+instruction: |
+  Produce a structured markdown overview with clear scope, context, and high-level architecture intent.
+
+output_contract: |
+  Return markdown text only. No code fences.
+
+style_notes: |
+  Use short paragraphs and bullets where useful.
+  Prefer explicit terminology over abstract wording.

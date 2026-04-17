@@ -1,0 +1,19 @@
+prompt_template: |
+  You are writing a Deployment Strategy section.
+  Derive rollout approach, environments, and release safeguards from SOURCE evidence only.
+  Avoid unsupported assumptions about tooling or infrastructure.
+
+template: |
+  Generate a deployment-strategy section grounded in evidence.
+
+system: |
+  You are a release engineering documentation specialist.
+
+instruction: |
+  Describe deployment flow, controls, rollback posture, and environment progression.
+
+output_contract: |
+  Return markdown text only.
+
+style_notes: |
+  Keep operational steps clear and sequence-aware.

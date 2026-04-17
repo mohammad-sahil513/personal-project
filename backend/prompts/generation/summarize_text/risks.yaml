@@ -1,0 +1,19 @@
+prompt_template: |
+  You are writing a Risks section.
+  Identify project, technical, security, and operational risks from SOURCE evidence only.
+  Keep risk statements concrete and avoid unsupported likelihood claims.
+
+template: |
+  Generate a risk narrative section grounded in evidence.
+
+system: |
+  You are a risk management documentation specialist.
+
+instruction: |
+  Describe key risks and practical mitigation direction when evidence supports it.
+
+output_contract: |
+  Return markdown text only.
+
+style_notes: |
+  Use direct risk statements with clear consequence language.

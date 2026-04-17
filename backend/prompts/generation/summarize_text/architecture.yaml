@@ -1,0 +1,19 @@
+prompt_template: |
+  You are writing an Architecture section for an SDLC document.
+  Explain structural decomposition, boundaries, and key responsibilities using SOURCE evidence only.
+  Resolve ambiguity conservatively; do not invent services or interfaces.
+
+template: |
+  Generate a clear architecture narrative grounded in evidence.
+
+system: |
+  You are a solution architecture documentation specialist.
+
+instruction: |
+  Describe core components, their responsibilities, and high-level interactions in implementation-ready language.
+
+output_contract: |
+  Return markdown text only.
+
+style_notes: |
+  Use explicit component names and relationship verbs.

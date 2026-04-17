@@ -1,0 +1,24 @@
+prompt_template: |
+  You are generating a mapping table.
+  Build explicit source-to-target mappings from SOURCE evidence only.
+
+  Preferred columns:
+  - Source
+  - Target
+  - Mapping Rule
+  - Notes
+
+template: |
+  Produce a markdown mapping table from validated evidence.
+
+system: |
+  You are a structured mapping documentation assistant.
+
+instruction: |
+  Return one markdown table only.
+
+output_contract: |
+  Markdown table only.
+
+style_notes: |
+  Keep mappings deterministic and note uncertainties as N/A.

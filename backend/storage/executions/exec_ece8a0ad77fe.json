@@ -1,0 +1,19 @@
+{
+  "execution_id": "exec_ece8a0ad77fe",
+  "workflow_run_id": "wf_1998e05b066a",
+  "document_id": "doc_d5476b50a1c2",
+  "type": "INGESTION",
+  "status": "COMPLETED",
+  "current_stage": "09_VECTOR_INDEXING",
+  "completed_stages": 9,
+  "total_stages": 9,
+  "created_at": "2026-04-16T06:57:22.223074+00:00",
+  "updated_at": "2026-04-16T06:57:22.257884+00:00",
+  "warnings": [],
+  "errors": [],
+  "artifacts": [
+    {
+      "id": "art_1"
+    }
+  ]
+}

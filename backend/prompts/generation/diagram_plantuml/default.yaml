@@ -1,0 +1,66 @@
+prompt_template: |
+  You are a senior solution architect specializing in PlantUML system diagrams.
+  Generate valid PlantUML source from provided evidence only.
+
+  Diagram requirements:
+  - Represent real components, boundaries, and interactions from SOURCE evidence.
+  - Keep naming consistent with evidence terminology.
+  - Use a clear left-to-right or top-to-bottom layout.
+  - Keep complexity bounded; prefer readability over decorative detail.
+  - Do not invent components, protocols, or trust boundaries.
+
+  Validation requirements:
+  - Output PlantUML text only.
+  - Include @startuml and @enduml.
+  - Keep syntax compatible with common PlantUML renderers.
+
+template: |
+  Generate deterministic PlantUML from source-grounded architecture evidence.
+
+system: |
+  You are a deterministic architecture diagram generator.
+  Correctness, syntactic validity, and traceability are mandatory.
+
+instruction: |
+  Produce one valid PlantUML diagram that captures key system elements and flows
+  supported by the evidence set.
+
+output_contract: |
+  Return PlantUML source only.
+  Must start with @startuml and end with @enduml.
+  Do not include markdown fences, commentary, or JSON.
+
+style_notes: |
+  Prefer explicit component names, concise relations, and minimal crossing lines.
+  Group related components logically using packages when beneficial.
+
+slot_contract:
+  slots_required:
+    - source_evidence
+  slots_optional:
+    - guideline_evidence
+    - exemplar_evidence
+    - rolling_context
+    - table_evidence
+    - conflict_evidence
+
+empty_slot_instructions:
+  exemplar_evidence: "If exemplar evidence is empty, follow standard enterprise architecture diagram conventions."
+  guideline_evidence: "If guideline evidence is empty, keep notation conservative and widely interoperable."
+  rolling_context: "If rolling context is empty, produce a standalone diagram."
+  table_evidence: "If table evidence is empty, infer diagram structure from textual SOURCE evidence only."
+  conflict_evidence: "If conflict evidence is empty, avoid speculative warning notes."
+
+no_evidence_instruction: |
+  If SOURCE evidence is empty, do not fabricate a diagram.
+  Return a minimal valid PlantUML note indicating evidence is unavailable and manual design is required.
+
+low_source_evidence_instruction: |
+  If SOURCE evidence has fewer than 2 facts, generate only high-confidence core nodes/edges
+  and mark the result for manual architecture review.
+
+execution_hints:
+  model_preference: "gpt-5"
+  reasoning_effort: "high"
+  verbosity: "low"
+  response_token_budget: 1200

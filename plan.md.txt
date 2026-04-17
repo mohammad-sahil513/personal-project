@@ -1,0 +1,690 @@
+# AI SDLC Engine — Comprehensive Testing Plan
+
+## Goal
+
+Build a complete test suite that verifies every module and its related files work together correctly. Tests are organized in a dedicated `tests/` folder with **unit** and **integration** sub-folders, grouped by module.
+
+---
+
+## Test Directory Structure
+
+```
+d:\ai-sdlc\backend\tests\
+├── conftest.py                          # Shared fixtures (tmp paths, settings override, etc.)
+├── unit\
+│   ├── core\
+│   │   ├── test_config.py
+│   │   ├── test_constants.py
+│   │   ├── test_ids.py
+│   │   ├── test_exceptions.py
+│   │   ├── test_response.py
+│   │   ├── test_logging.py
+│   │   └── test_request_context.py
+│   ├── repositories\
+│   │   ├── test_document_repository.py
+│   │   ├── test_template_metadata_repository.py
+│   │   ├── test_workflow_repository.py
+│   │   ├── test_execution_repository.py
+│   │   └── test_output_repository.py
+│   ├── workers\
+│   │   ├── test_background_runner.py
+│   │   └── test_task_dispatcher.py
+│   ├── modules\
+│   │   ├── template\
+│   │   │   ├── test_template_models.py
+│   │   │   ├── test_template_contracts.py
+│   │   │   ├── test_template_loader_service.py
+│   │   │   ├── test_template_validator_service.py
+│   │   │   ├── test_template_resolver_service.py
+│   │   │   ├── test_dependency_sorter_service.py
+│   │   │   ├── test_template_repository.py
+│   │   │   └── test_compiler\
+│   │   │       ├── test_docx_extractor.py
+│   │   │       ├── test_heuristic_mapper.py
+│   │   │       ├── test_header_normalizer.py
+│   │   │       ├── test_defaults_injector.py
+│   │   │       └── test_semantic_validator.py
+│   │   ├── ingestion\
+│   │   │   ├── test_ingestion_contracts.py
+│   │   │   ├── test_upload_service.py
+│   │   │   ├── test_parser_service.py
+│   │   │   ├── test_pii_service.py
+│   │   │   ├── test_chunking_service.py
+│   │   │   ├── test_segmentation_service.py
+│   │   │   ├── test_validation_service.py
+│   │   │   └── test_ingestion_repository.py
+│   │   ├── retrieval\
+│   │   │   ├── test_retrieval_contracts.py
+│   │   │   ├── test_query_builder.py
+│   │   │   ├── test_profile_resolver.py
+│   │   │   ├── test_vector_search_service.py
+│   │   │   ├── test_evidence_packager.py
+│   │   │   ├── test_reranker_service.py
+│   │   │   └── test_retrieval_service.py
+│   │   ├── generation\
+│   │   │   ├── test_generation_contracts.py
+│   │   │   ├── test_generation_config.py
+│   │   │   ├── test_prompt_assembler.py
+│   │   │   ├── test_text_generator.py
+│   │   │   ├── test_table_generator.py
+│   │   │   ├── test_diagram_generator.py
+│   │   │   ├── test_section_executor.py
+│   │   │   ├── test_dependency_checker.py
+│   │   │   ├── test_output_validator.py
+│   │   │   ├── test_section_assembler.py
+│   │   │   └── test_toc_generator.py
+│   │   ├── rendering\
+│   │   │   ├── test_markdown_parser.py
+│   │   │   ├── test_content_injector.py
+│   │   │   ├── test_anchor_resolver.py
+│   │   │   ├── test_style_applicator.py
+│   │   │   ├── test_table_builder.py
+│   │   │   └── test_docx_renderer.py
+│   │   └── observability\
+│   │       ├── test_cost_estimator_service.py
+│   │       ├── test_pricing_registry_service.py
+│   │       ├── test_cost_aggregation_service.py
+│   │       ├── test_logging_service.py
+│   │       └── test_request_context_service.py
+│   ├── application\
+│   │   ├── dto\
+│   │   │   ├── test_document_dto.py
+│   │   │   ├── test_template_dto.py
+│   │   │   ├── test_workflow_dto.py
+│   │   │   └── test_generation_dto.py
+│   │   └── services\
+│   │       ├── test_document_service.py
+│   │       ├── test_template_app_service.py
+│   │       ├── test_template_compile_service.py
+│   │       ├── test_workflow_service.py
+│   │       ├── test_workflow_executor_service.py
+│   │       ├── test_output_service.py
+│   │       └── test_output_export_service.py
+│   ├── api\
+│   │   ├── test_schemas.py
+│   │   ├── test_error_handlers.py
+│   │   └── test_dependencies.py
+│   └── pipeline\
+│       ├── test_section_execution_planner.py
+│       └── test_progress_planner.py
+└── integration\
+    ├── test_api_health.py
+    ├── test_api_documents.py
+    ├── test_api_templates.py
+    ├── test_api_workflows.py
+    ├── test_api_outputs.py
+    ├── test_template_to_workflow.py
+    ├── test_ingestion_pipeline.py
+    └── test_workflow_lifecycle.py
+```
+
+---
+
+## Phase Overview
+
+| Phase | Focus Area | # Steps | Depends On |
+|-------|-----------|---------|------------|
+| **1** | Core Foundation (`core/`, `repositories/`, `workers/`) | 3 | Nothing |
+| **2** | Template Module (`modules/template/`) | 3 | Phase 1 |
+| **3** | Ingestion Module (`modules/ingestion/`) | 2 | Phase 1 |
+| **4** | Retrieval Module (`modules/retrieval/`) | 2 | Phase 1 |
+| **5** | Generation Module (`modules/generation/`) | 3 | Phase 1 |
+| **6** | Rendering + Observability + Application Layer + API | 4 | Phases 1-5 |
+| **7** | Pipeline, Workers Integration & Cross-Module E2E | 2 | Phases 1-6 |
+
+---
+
+## Phase 1 — Core Foundation
+
+> **Objective:** Verify that the foundational building blocks — settings, IDs, exceptions, response helpers, logging, request context, file-based repositories, and the background task dispatcher — all work correctly in isolation.
+
+### Step 1.1 — Core Utilities (`core/`)
+
+**Files Under Test:**
+| Source File | Test File |
+|-------------|-----------|
+| [config.py](file:///d:/ai-sdlc/backend/core/config.py) | `tests/unit/core/test_config.py` |
+| [constants.py](file:///d:/ai-sdlc/backend/core/constants.py) | `tests/unit/core/test_constants.py` |
+| [ids.py](file:///d:/ai-sdlc/backend/core/ids.py) | `tests/unit/core/test_ids.py` |
+| [exceptions.py](file:///d:/ai-sdlc/backend/core/exceptions.py) | `tests/unit/core/test_exceptions.py` |
+| [response.py](file:///d:/ai-sdlc/backend/core/response.py) | `tests/unit/core/test_response.py` |
+| [logging.py](file:///d:/ai-sdlc/backend/core/logging.py) | `tests/unit/core/test_logging.py` |
+| [request_context.py](file:///d:/ai-sdlc/backend/core/request_context.py) | `tests/unit/core/test_request_context.py` |
+
+**What to Verify:**
+- `Settings` loads defaults and respects env overrides; all `@property` paths resolve correctly.
+- All constants have expected types and values.
+- `generate_*_id()` functions produce unique prefixed strings in correct format.
+- Every custom exception class sets `status_code`, `error_code`, and `details` properly.
+- `success_response()` / `error_response()` produce the correct envelope shapes.
+- `configure_logging()` is idempotent; `get_logger()` returns a Logger with the `RequestIdFilter`.
+- `set_request_id()` / `get_request_id()` / `clear_request_id()` manage context vars correctly.
+
+**Manual Verify Command:**
+```powershell
+cd d:\ai-sdlc
+python -m pytest backend/tests/unit/core/ -v --tb=short
+```
+
+---
+
+### Step 1.2 — File-Based Repositories (`repositories/`)
+
+**Files Under Test:**
+| Source File | Test File |
+|-------------|-----------|
+| [document_repository.py](file:///d:/ai-sdlc/backend/repositories/document_repository.py) | `tests/unit/repositories/test_document_repository.py` |
+| [template_metadata_repository.py](file:///d:/ai-sdlc/backend/repositories/template_metadata_repository.py) | `tests/unit/repositories/test_template_metadata_repository.py` |
+| [workflow_repository.py](file:///d:/ai-sdlc/backend/repositories/workflow_repository.py) | `tests/unit/repositories/test_workflow_repository.py` |
+| [execution_repository.py](file:///d:/ai-sdlc/backend/repositories/execution_repository.py) | `tests/unit/repositories/test_execution_repository.py` |
+| [output_repository.py](file:///d:/ai-sdlc/backend/repositories/output_repository.py) | `tests/unit/repositories/test_output_repository.py` |
+
+**What to Verify:**
+- CRUD lifecycle: `create → get → list → update → delete` for each repository.
+- `ConflictError` on duplicate create; `NotFoundError` on get/delete missing entity.
+- JSON files are written/read correctly from temp directory.
+- Binary save/load works for `DocumentRepository`.
+- Listing returns all records in sorted order.
+
+**Manual Verify Command:**
+```powershell
+cd d:\ai-sdlc
+python -m pytest backend/tests/unit/repositories/ -v --tb=short
+```
+
+---
+
+### Step 1.3 — Workers (`workers/`)
+
+**Files Under Test:**
+| Source File | Test File |
+|-------------|-----------|
+| [background_runner.py](file:///d:/ai-sdlc/backend/workers/background_runner.py) | `tests/unit/workers/test_background_runner.py` |
+| [task_dispatcher.py](file:///d:/ai-sdlc/backend/workers/task_dispatcher.py) | `tests/unit/workers/test_task_dispatcher.py` |
+
+**What to Verify:**
+- `BackgroundRunner.run()` correctly executes async and sync callables.
+- `TaskDispatcher.dispatch()` uses the right strategy (BackgroundTasks → asyncio.create_task → asyncio.run).
+- Error callback (`on_error`) is invoked on failure; exceptions don't propagate.
+- Dispatch mode labels are correctly returned.
+
+**Manual Verify Command:**
+```powershell
+cd d:\ai-sdlc
+python -m pytest backend/tests/unit/workers/ -v --tb=short
+```
+
+---
+
+## Phase 2 — Template Module
+
+> **Objective:** Verify the template system — models, contracts, services, compiler, layout, and repository — all work correctly.
+
+### Step 2.1 — Template Models, Contracts & Repository
+
+**Files Under Test:**
+| Source File | Test File |
+|-------------|-----------|
+| `modules/template/models/template_config.py` | `tests/unit/modules/template/test_template_models.py` |
+| `modules/template/models/template_enums.py` | (included in above) |
+| `modules/template/contracts/*.py` | `tests/unit/modules/template/test_template_contracts.py` |
+| `modules/template/repositories/template_repository.py` | `tests/unit/modules/template/test_template_repository.py` |
+
+**What to Verify:**
+- All Pydantic models instantiate, validate, and serialize correctly.
+- Enum members have expected string values.
+- Contract classes enforce required fields and type constraints.
+- `TemplateRepository` CRUD operations (save, get, list, delete) with JSON persistence.
+
+**Manual Verify Command:**
+```powershell
+cd d:\ai-sdlc
+python -m pytest backend/tests/unit/modules/template/test_template_models.py backend/tests/unit/modules/template/test_template_contracts.py backend/tests/unit/modules/template/test_template_repository.py -v --tb=short
+```
+
+---
+
+### Step 2.2 — Template Services
+
+**Files Under Test:**
+| Source File | Test File |
+|-------------|-----------|
+| `modules/template/services/template_loader_service.py` | `tests/unit/modules/template/test_template_loader_service.py` |
+| `modules/template/services/template_validator_service.py` | `tests/unit/modules/template/test_template_validator_service.py` |
+| `modules/template/services/template_resolver_service.py` | `tests/unit/modules/template/test_template_resolver_service.py` |
+| `modules/template/services/dependency_sorter_service.py` | `tests/unit/modules/template/test_dependency_sorter_service.py` |
+
+**What to Verify:**
+- Loader correctly reads and parses template config files.
+- Validator catches schema violations, missing required sections, invalid enums.
+- Resolver maps sections to their generation config and dependency graph.
+- Dependency sorter produces a valid topological order; detects cycles.
+
+**Manual Verify Command:**
+```powershell
+cd d:\ai-sdlc
+python -m pytest backend/tests/unit/modules/template/test_template_loader_service.py backend/tests/unit/modules/template/test_template_validator_service.py backend/tests/unit/modules/template/test_template_resolver_service.py backend/tests/unit/modules/template/test_dependency_sorter_service.py -v --tb=short
+```
+
+---
+
+### Step 2.3 — Template Compiler
+
+**Files Under Test:**
+| Source File | Test File |
+|-------------|-----------|
+| `modules/template/compiler/docx_extractor.py` | `tests/unit/modules/template/test_compiler/test_docx_extractor.py` |
+| `modules/template/compiler/heuristic_mapper.py` | `tests/unit/modules/template/test_compiler/test_heuristic_mapper.py` |
+| `modules/template/compiler/header_normalizer.py` | `tests/unit/modules/template/test_compiler/test_header_normalizer.py` |
+| `modules/template/compiler/defaults_injector.py` | `tests/unit/modules/template/test_compiler/test_defaults_injector.py` |
+| `modules/template/compiler/semantic_validator.py` | `tests/unit/modules/template/test_compiler/test_semantic_validator.py` |
+
+**What to Verify:**
+- DOCX extractor can read a minimal `.docx` file and return structured sections.
+- Heuristic mapper correctly maps ambiguous heading levels to section types.
+- Header normalizer standardizes heading names.
+- Defaults injector fills missing config fields with sensible defaults.
+- Semantic validator catches structural inconsistencies in compiled output.
+
+**Manual Verify Command:**
+```powershell
+cd d:\ai-sdlc
+python -m pytest backend/tests/unit/modules/template/test_compiler/ -v --tb=short
+```
+
+---
+
+## Phase 3 — Ingestion Module
+
+> **Objective:** Verify the document ingestion pipeline — contracts, services, stages, and repository.
+
+### Step 3.1 — Ingestion Contracts, Services & Repository
+
+**Files Under Test:**
+| Source File | Test File |
+|-------------|-----------|
+| `modules/ingestion/contracts/stage_*_contracts.py` | `tests/unit/modules/ingestion/test_ingestion_contracts.py` |
+| `modules/ingestion/services/upload_service.py` | `tests/unit/modules/ingestion/test_upload_service.py` |
+| `modules/ingestion/services/parser_service.py` | `tests/unit/modules/ingestion/test_parser_service.py` |
+| `modules/ingestion/services/pii_service.py` | `tests/unit/modules/ingestion/test_pii_service.py` |
+| `modules/ingestion/services/chunking_service.py` | `tests/unit/modules/ingestion/test_chunking_service.py` |
+| `modules/ingestion/services/segmentation_service.py` | `tests/unit/modules/ingestion/test_segmentation_service.py` |
+| `modules/ingestion/services/validation_service.py` | `tests/unit/modules/ingestion/test_validation_service.py` |
+| `modules/ingestion/repositories/ingestion_repository.py` | `tests/unit/modules/ingestion/test_ingestion_repository.py` |
+
+**What to Verify:**
+- All 9 stage contracts instantiate and validate their fields.
+- Upload service validates file types, deduplication logic.
+- Parser service extracts text/structure from documents (mock external clients).
+- PII service detects and masks sensitive data patterns.
+- Chunking service splits text into semantic chunks with correct overlap.
+- Segmentation service identifies section boundaries.
+- Validation service runs post-processing quality checks.
+- Ingestion repository persists/retrieves run metadata.
+
+**Manual Verify Command:**
+```powershell
+cd d:\ai-sdlc
+python -m pytest backend/tests/unit/modules/ingestion/ -v --tb=short
+```
+
+---
+
+### Step 3.2 — Ingestion Stages (Pipeline Stages)
+
+**Files Under Test:**
+| Source File | Test File (within integration) |
+|-------------|-----------|
+| `modules/ingestion/stages/01_upload_and_dedup.py` through `09_vector_indexing.py` | `tests/integration/test_ingestion_pipeline.py` |
+
+**What to Verify:**
+- Each stage accepts correct input and returns its output contract.
+- Stages can be chained: output of stage N is valid input for stage N+1.
+- Error propagation: stage failure is caught and reported correctly.
+
+**Manual Verify Command:**
+```powershell
+cd d:\ai-sdlc
+python -m pytest backend/tests/integration/test_ingestion_pipeline.py -v --tb=short
+```
+
+---
+
+## Phase 4 — Retrieval Module
+
+> **Objective:** Verify the evidence retrieval system — contracts, query building, search, reranking, and evidence packaging.
+
+### Step 4.1 — Retrieval Contracts & Config
+
+**Files Under Test:**
+| Source File | Test File |
+|-------------|-----------|
+| `modules/retrieval/contracts/*.py` | `tests/unit/modules/retrieval/test_retrieval_contracts.py` |
+| `modules/retrieval/models/retrieval_config.py` | (included in above) |
+| `modules/retrieval/profiles/retrieval_profiles.py` | `tests/unit/modules/retrieval/test_profile_resolver.py` |
+
+**What to Verify:**
+- All retrieval contracts (evidence, index, retrieval) validate correctly.
+- Config model loads defaults and respects overrides.
+- Profile definitions map section types to search strategies.
+
+**Manual Verify Command:**
+```powershell
+cd d:\ai-sdlc
+python -m pytest backend/tests/unit/modules/retrieval/test_retrieval_contracts.py backend/tests/unit/modules/retrieval/test_profile_resolver.py -v --tb=short
+```
+
+---
+
+### Step 4.2 — Retrieval Services
+
+**Files Under Test:**
+| Source File | Test File |
+|-------------|-----------|
+| `modules/retrieval/services/query_builder.py` | `tests/unit/modules/retrieval/test_query_builder.py` |
+| `modules/retrieval/services/vector_search_service.py` | `tests/unit/modules/retrieval/test_vector_search_service.py` |
+| `modules/retrieval/services/evidence_packager.py` | `tests/unit/modules/retrieval/test_evidence_packager.py` |
+| `modules/retrieval/services/reranker_service.py` | `tests/unit/modules/retrieval/test_reranker_service.py` |
+| `modules/retrieval/services/retrieval_service.py` | `tests/unit/modules/retrieval/test_retrieval_service.py` |
+
+**What to Verify:**
+- Query builder constructs correct search queries from section metadata.
+- Vector search service calls mock search client and returns typed results.
+- Evidence packager groups and scores search results into evidence bundles.
+- Reranker reorders results by relevance with correct scoring.
+- Top-level retrieval service orchestrates the full flow (mock dependencies).
+
+**Manual Verify Command:**
+```powershell
+cd d:\ai-sdlc
+python -m pytest backend/tests/unit/modules/retrieval/ -v --tb=short
+```
+
+---
+
+## Phase 5 — Generation Module
+
+> **Objective:** Verify AI content generation — config, generators, orchestration, assembly, validation, and diagrams.
+
+### Step 5.1 — Generation Config, Contracts & Generators
+
+**Files Under Test:**
+| Source File | Test File |
+|-------------|-----------|
+| `modules/generation/contracts/*.py` | `tests/unit/modules/generation/test_generation_contracts.py` |
+| `modules/generation/models/generation_config.py` | `tests/unit/modules/generation/test_generation_config.py` |
+| `modules/generation/generators/prompt_assembler.py` | `tests/unit/modules/generation/test_prompt_assembler.py` |
+| `modules/generation/generators/text_generator.py` | `tests/unit/modules/generation/test_text_generator.py` |
+| `modules/generation/generators/table_generator.py` | `tests/unit/modules/generation/test_table_generator.py` |
+| `modules/generation/generators/diagram_generator.py` | `tests/unit/modules/generation/test_diagram_generator.py` |
+
+**What to Verify:**
+- All generation contracts instantiate and validate.
+- Config model loads with correct defaults.
+- Prompt assembler combines template sections, evidence, and instructions correctly.
+- Text/table/diagram generators produce expected output shapes (mock LLM calls).
+
+**Manual Verify Command:**
+```powershell
+cd d:\ai-sdlc
+python -m pytest backend/tests/unit/modules/generation/test_generation_contracts.py backend/tests/unit/modules/generation/test_generation_config.py backend/tests/unit/modules/generation/test_prompt_assembler.py backend/tests/unit/modules/generation/test_text_generator.py backend/tests/unit/modules/generation/test_table_generator.py backend/tests/unit/modules/generation/test_diagram_generator.py -v --tb=short
+```
+
+---
+
+### Step 5.2 — Generation Orchestration & Assembly
+
+**Files Under Test:**
+| Source File | Test File |
+|-------------|-----------|
+| `modules/generation/orchestrators/section_executor.py` | `tests/unit/modules/generation/test_section_executor.py` |
+| `modules/generation/orchestrators/dependency_checker.py` | `tests/unit/modules/generation/test_dependency_checker.py` |
+| `modules/generation/assembly/section_assembler.py` | `tests/unit/modules/generation/test_section_assembler.py` |
+| `modules/generation/assembly/toc_generator.py` | `tests/unit/modules/generation/test_toc_generator.py` |
+
+**What to Verify:**
+- Section executor runs generation for a section with correct dependency resolution (mock generators).
+- Dependency checker detects missing/ready dependencies correctly.
+- Section assembler combines generated section outputs into ordered document.
+- TOC generator produces a valid table of contents from assembled sections.
+
+**Manual Verify Command:**
+```powershell
+cd d:\ai-sdlc
+python -m pytest backend/tests/unit/modules/generation/test_section_executor.py backend/tests/unit/modules/generation/test_dependency_checker.py backend/tests/unit/modules/generation/test_section_assembler.py backend/tests/unit/modules/generation/test_toc_generator.py -v --tb=short
+```
+
+---
+
+### Step 5.3 — Generation Validation & Correction
+
+**Files Under Test:**
+| Source File | Test File |
+|-------------|-----------|
+| `modules/generation/validators/output_validator.py` | `tests/unit/modules/generation/test_output_validator.py` |
+| `modules/generation/validators/correction_loop.py` | (integration tested in Phase 7) |
+
+**What to Verify:**
+- Output validator detects empty, too-short, wrong-format outputs.
+- Validation result objects contain proper severity and error details.
+
+**Manual Verify Command:**
+```powershell
+cd d:\ai-sdlc
+python -m pytest backend/tests/unit/modules/generation/test_output_validator.py -v --tb=short
+```
+
+---
+
+## Phase 6 — Rendering, Observability, Application Layer & API
+
+> **Objective:** Verify the rendering pipeline, observability telemetry, application service layer (bridges/DTOs), and API routes.
+
+### Step 6.1 — Rendering Module
+
+**Files Under Test:**
+| Source File | Test File |
+|-------------|-----------|
+| `modules/rendering/markdown_parser.py` | `tests/unit/modules/rendering/test_markdown_parser.py` |
+| `modules/rendering/content_injector.py` | `tests/unit/modules/rendering/test_content_injector.py` |
+| `modules/rendering/anchor_resolver.py` | `tests/unit/modules/rendering/test_anchor_resolver.py` |
+| `modules/rendering/style_applicator.py` | `tests/unit/modules/rendering/test_style_applicator.py` |
+| `modules/rendering/table_builder.py` | `tests/unit/modules/rendering/test_table_builder.py` |
+| `modules/rendering/docx_renderer.py` | `tests/unit/modules/rendering/test_docx_renderer.py` |
+
+**What to Verify:**
+- Markdown parser converts markdown to internal document tree.
+- Content injector places generated text into template slots.
+- Anchor resolver links cross-references/headings.
+- Style applicator maps template styles to generated content.
+- Table builder creates well-formed tables in document format.
+- DOCX renderer produces a valid `.docx` file from assembled data.
+
+**Manual Verify Command:**
+```powershell
+cd d:\ai-sdlc
+python -m pytest backend/tests/unit/modules/rendering/ -v --tb=short
+```
+
+---
+
+### Step 6.2 — Observability Module
+
+**Files Under Test:**
+| Source File | Test File |
+|-------------|-----------|
+| `modules/observability/services/cost_estimator_service.py` | `tests/unit/modules/observability/test_cost_estimator_service.py` |
+| `modules/observability/services/pricing_registry_service.py` | `tests/unit/modules/observability/test_pricing_registry_service.py` |
+| `modules/observability/services/cost_aggregation_service.py` | `tests/unit/modules/observability/test_cost_aggregation_service.py` |
+| `modules/observability/services/logging_service.py` | `tests/unit/modules/observability/test_logging_service.py` |
+| `modules/observability/services/request_context_service.py` | `tests/unit/modules/observability/test_request_context_service.py` |
+
+**What to Verify:**
+- Cost estimator calculates costs from token counts and pricing config.
+- Pricing registry loads models/prices from the JSON config.
+- Cost aggregation sums per-request costs correctly.
+- Logging service formats and outputs structured telemetry.
+- Request context service manages correlation IDs per request.
+
+**Manual Verify Command:**
+```powershell
+cd d:\ai-sdlc
+python -m pytest backend/tests/unit/modules/observability/ -v --tb=short
+```
+
+---
+
+### Step 6.3 — Application Layer (DTOs + Services)
+
+**Files Under Test:**
+| Source File | Test File |
+|-------------|-----------|
+| `application/dto/*.py` | `tests/unit/application/dto/test_*_dto.py` |
+| `application/services/document_service.py` | `tests/unit/application/services/test_document_service.py` |
+| `application/services/template_app_service.py` | `tests/unit/application/services/test_template_app_service.py` |
+| `application/services/template_compile_service.py` | `tests/unit/application/services/test_template_compile_service.py` |
+| `application/services/workflow_service.py` | `tests/unit/application/services/test_workflow_service.py` |
+| `application/services/workflow_executor_service.py` | `tests/unit/application/services/test_workflow_executor_service.py` |
+| `application/services/output_service.py` | `tests/unit/application/services/test_output_service.py` |
+| `application/services/output_export_service.py` | `tests/unit/application/services/test_output_export_service.py` |
+
+**What to Verify:**
+- All DTOs serialize/deserialize correctly and validate required fields.
+- Document service delegates to DocumentRepository correctly.
+- Template app service coordinates loader → validator → repository flow.
+- Template compile service invokes compiler pipeline and persists result.
+- Workflow service creates/updates/lists workflow runs.
+- Workflow executor orchestrates the full generation workflow (mock all modules).
+- Output service stores and retrieves generated outputs.
+- Export service produces downloadable artifacts.
+
+**Manual Verify Command:**
+```powershell
+cd d:\ai-sdlc
+python -m pytest backend/tests/unit/application/ -v --tb=short
+```
+
+---
+
+### Step 6.4 — API Layer (Routes, Schemas, Error Handlers)
+
+**Files Under Test:**
+| Source File | Test File |
+|-------------|-----------|
+| `api/schemas/*.py` | `tests/unit/api/test_schemas.py` |
+| `api/error_handlers.py` | `tests/unit/api/test_error_handlers.py` |
+| `api/dependencies.py` | `tests/unit/api/test_dependencies.py` |
+| `api/routes/health_routes.py` | `tests/integration/test_api_health.py` |
+| `api/routes/document_routes.py` | `tests/integration/test_api_documents.py` |
+| `api/routes/template_routes.py` | `tests/integration/test_api_templates.py` |
+| `api/routes/workflow_routes.py` | `tests/integration/test_api_workflows.py` |
+| `api/routes/output_routes.py` | `tests/integration/test_api_outputs.py` |
+
+**What to Verify:**
+- All Pydantic schema models validate request/response shapes correctly.
+- Error handlers produce correct JSON response envelopes for each exception type.
+- Dependencies return expected singleton/factory instances.
+- **Integration:** Health endpoint returns 200 + correct payload.
+- **Integration:** Document CRUD endpoints work end-to-end with TestClient.
+- **Integration:** Template upload/list/get endpoints work.
+- **Integration:** Workflow create/start/status endpoints work.
+- **Integration:** Output list/get endpoints work.
+
+**Manual Verify Command:**
+```powershell
+cd d:\ai-sdlc
+# Unit tests for API internals
+python -m pytest backend/tests/unit/api/ -v --tb=short
+
+# Integration tests for all API endpoints
+python -m pytest backend/tests/integration/test_api_*.py -v --tb=short
+```
+
+---
+
+## Phase 7 — Pipeline, Cross-Module Integration & E2E
+
+> **Objective:** Verify end-to-end flows crossing multiple modules — the pipeline planners, template→workflow flow, and the full workflow lifecycle.
+
+### Step 7.1 — Pipeline Planners
+
+**Files Under Test:**
+| Source File | Test File |
+|-------------|-----------|
+| `pipeline/planners/section_execution_planner.py` | `tests/unit/pipeline/test_section_execution_planner.py` |
+| `pipeline/planners/progress_planner.py` | `tests/unit/pipeline/test_progress_planner.py` |
+
+**What to Verify:**
+- Section execution planner creates valid execution plans from template topology.
+- Progress planner tracks section completion and reports percentage correctly.
+- Both handle edge cases (empty sections, single-section, circular deps).
+
+**Manual Verify Command:**
+```powershell
+cd d:\ai-sdlc
+python -m pytest backend/tests/unit/pipeline/ -v --tb=short
+```
+
+---
+
+### Step 7.2 — Cross-Module Integration Tests
+
+**Files Under Test:**
+| Flow | Test File |
+|------|-----------|
+| Template upload → compile → create workflow | `tests/integration/test_template_to_workflow.py` |
+| Full workflow lifecycle (create → start → poll → complete) | `tests/integration/test_workflow_lifecycle.py` |
+
+**What to Verify:**
+- **Template→Workflow:** Upload a template file → compile → create a workflow referencing it → verify the workflow's section plan matches template topology.
+- **Workflow Lifecycle:** Create workflow → start execution → verify state transitions → poll progress → check final output.
+
+**Manual Verify Command:**
+```powershell
+cd d:\ai-sdlc
+python -m pytest backend/tests/integration/ -v --tb=short
+```
+
+---
+
+## Full Suite Manual Verify Command
+
+After all phases are complete:
+
+```powershell
+cd d:\ai-sdlc
+
+# Run ALL tests with coverage report
+python -m pytest backend/tests/ -v --tb=short --cov=backend --cov-report=term-missing
+
+# Run only unit tests
+python -m pytest backend/tests/unit/ -v --tb=short
+
+# Run only integration tests
+python -m pytest backend/tests/integration/ -v --tb=short
+```
+
+---
+
+## Execution Rules
+
+> [!IMPORTANT]
+> Before starting **each phase**, I will:
+> 1. Describe the phase's purpose and what functionalities it covers
+> 2. Ask you about the specific behaviors/edge cases you want tested
+> 3. Only proceed after your confirmation
+
+> [!NOTE]
+> - All external services (Azure AI, OpenAI, blob storage, search) will be **mocked** in unit tests
+> - Integration tests will use FastAPI's `TestClient` with the real app (but mocked external deps)
+> - Each test file will have a clear docstring explaining what it tests
+> - `conftest.py` will provide shared fixtures: temp directories, settings overrides, mock clients
+
+---
+
+## Open Questions
+
+> [!IMPORTANT]
+> 1. **Test fixtures for DOCX files**: The template compiler tests need sample `.docx` files. Should I create minimal test fixtures, or do you have existing sample templates I should use?
+> 2. **Azure service mocking strategy**: Should we mock at the SDK client level (e.g., `SearchClient`, `DocumentIntelligenceClient`), or at our adapter level (e.g., `SearchRepository`, `OpenAIClient` class)?
+> 3. **Coverage threshold**: Do you want a minimum coverage target (e.g., 80%)?

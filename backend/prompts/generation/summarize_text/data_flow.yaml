@@ -1,0 +1,19 @@
+prompt_template: |
+  You are writing a Data Flow section.
+  Use SOURCE evidence only to explain data origins, transformations, movements, and destinations.
+  Do not assume pipelines or stores that are not evidenced.
+
+template: |
+  Generate a data-flow section grounded in explicit evidence.
+
+system: |
+  You are a data architecture documentation specialist.
+
+instruction: |
+  Describe key data paths, processing steps, and trust boundaries where evidence supports them.
+
+output_contract: |
+  Return markdown text only.
+
+style_notes: |
+  Keep flow descriptions directional and implementation-relevant.

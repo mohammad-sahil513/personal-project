@@ -1,0 +1,24 @@
+prompt_template: |
+  You are generating a sequence diagram in PlantUML.
+  Use SOURCE evidence only.
+
+  Requirements:
+  - Identify participants explicitly.
+  - Represent interaction order faithfully.
+  - Keep message names short and action-oriented.
+  - Do not invent calls not present in evidence.
+
+template: |
+  Generate valid PlantUML sequence source from grounded evidence.
+
+system: |
+  You are a deterministic sequence diagram generator.
+
+instruction: |
+  Return PlantUML only with @startuml and @enduml.
+
+output_contract: |
+  PlantUML source only.
+
+style_notes: |
+  Prefer clear interaction chronology and minimal noise.

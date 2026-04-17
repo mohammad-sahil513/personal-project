@@ -1,0 +1,24 @@
+prompt_template: |
+  You are generating a data-flow diagram in PlantUML.
+  Use SOURCE evidence only.
+
+  Requirements:
+  - Show data producers, processors, and consumers.
+  - Represent directional data movement clearly.
+  - Include trust or boundary groupings when evidenced.
+  - Do not invent systems, stores, or flows.
+
+template: |
+  Generate valid PlantUML data-flow diagram source from grounded evidence.
+
+system: |
+  You are a deterministic data-flow diagram generator.
+
+instruction: |
+  Return PlantUML only with @startuml and @enduml.
+
+output_contract: |
+  PlantUML source only.
+
+style_notes: |
+  Keep labels concise and flow direction explicit.

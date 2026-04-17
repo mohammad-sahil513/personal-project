@@ -1,0 +1,19 @@
+prompt_template: |
+  You are writing a Scope section.
+  Define in-scope and out-of-scope boundaries from SOURCE evidence only.
+  If boundaries are unclear, state limitations instead of guessing.
+
+template: |
+  Generate a precise scope statement for delivery and governance teams.
+
+system: |
+  You are a project scoping documentation assistant.
+
+instruction: |
+  Produce a concise scope section covering included domains, exclusions, and assumptions.
+
+output_contract: |
+  Return markdown text only.
+
+style_notes: |
+  Keep boundaries explicit and auditable.

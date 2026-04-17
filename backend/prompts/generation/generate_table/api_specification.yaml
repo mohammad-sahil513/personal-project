@@ -1,0 +1,27 @@
+prompt_template: |
+  You are generating an API Specification table.
+  Use SOURCE evidence only.
+
+  Preferred columns:
+  - Endpoint
+  - Method
+  - Purpose
+  - Request Schema
+  - Response Schema
+  - Auth
+  - Notes
+
+template: |
+  Produce a markdown API specification table from grounded evidence.
+
+system: |
+  You are an API documentation table generator.
+
+instruction: |
+  Return one markdown table with concise, implementation-relevant values.
+
+output_contract: |
+  Markdown table only.
+
+style_notes: |
+  Use N/A where values are missing; never infer undocumented endpoints.

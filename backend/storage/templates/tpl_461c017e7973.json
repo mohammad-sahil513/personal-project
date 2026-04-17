@@ -1,0 +1,19 @@
+{
+  "template_id": "tpl_461c017e7973",
+  "filename": "my_template.docx",
+  "template_type": "SDLC",
+  "version": "1.0",
+  "status": "COMPILED",
+  "created_at": "2026-04-16T06:57:22.150961+00:00",
+  "updated_at": "2026-04-16T06:57:22.159180+00:00",
+  "compile_job_id": null,
+  "compiled_artifacts": [
+    {
+      "section_id": "sec_1",
+      "title": "Architecture",
+      "execution_order": 1,
+      "generation_strategy": "summarize_text",
+      "dependencies": []
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "workflow_run_id": "wf_e0e3f2c37db3",
+  "status": "PENDING",
+  "current_phase": "INPUT_PREPARATION",
+  "overall_progress_percent": 0,
+  "document_id": "doc_0d47f0fcc291",
+  "template_id": "tpl_f13563226e8d",
+  "output_id": null,
+  "created_at": "2026-04-16T09:08:40.926007+00:00",
+  "updated_at": "2026-04-16T09:08:40.926007+00:00",
+  "started_at": null,
+  "completed_at": null,
+  "phases": [],
+  "execution_refs": {},
+  "section_plan": null,
+  "section_progress": null,
+  "section_retrieval_results": null,
+  "section_generation_results": null,
+  "assembled_document": null,
+  "observability_summary": null,
+  "warnings": [],
+  "errors": []
+}

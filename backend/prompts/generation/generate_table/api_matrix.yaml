@@ -1,0 +1,27 @@
+prompt_template: |
+  You are generating an API Matrix table.
+  Use SOURCE evidence only.
+
+  Preferred columns:
+  - API / Endpoint
+  - Method
+  - Consumer
+  - Provider
+  - Auth
+  - Payload Summary
+  - Status
+
+template: |
+  Produce a markdown API matrix from grounded evidence.
+
+system: |
+  You are an API governance documentation assistant.
+
+instruction: |
+  Return one markdown table only with clear API interaction mapping.
+
+output_contract: |
+  Markdown table only.
+
+style_notes: |
+  Use N/A for missing metadata and avoid undocumented APIs.

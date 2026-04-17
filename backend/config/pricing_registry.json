@@ -1,0 +1,39 @@
+{
+  "models": {
+    "gpt-5-mini": {
+      "unit": "1k_tokens",
+      "input_cost": 0.0,
+      "output_cost": 0.0,
+      "currency": "USD"
+    },
+    "gpt-5": {
+      "unit": "1k_tokens",
+      "input_cost": 0.0,
+      "output_cost": 0.0,
+      "currency": "USD"
+    },
+    "text-embedding-3-small": {
+      "unit": "1k_tokens",
+      "input_cost": 0.0,
+      "output_cost": 0.0,
+      "currency": "USD"
+    }
+  },
+  "services": {
+    "azure_search": {
+      "unit": "request",
+      "cost": 0.0,
+      "currency": "USD"
+    },
+    "azure_blob_storage": {
+      "unit": "request",
+      "cost": 0.0,
+      "currency": "USD"
+    },
+    "azure_document_intelligence": {
+      "unit": "page",
+      "cost": 0.0,
+      "currency": "USD"
+    }
+  }
+}

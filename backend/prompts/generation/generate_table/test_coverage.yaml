@@ -1,0 +1,25 @@
+prompt_template: |
+  You are generating a Test Coverage table.
+  Use SOURCE evidence only and do not claim coverage that is not explicitly documented.
+
+  Preferred columns:
+  - Requirement / Feature
+  - Test Type
+  - Coverage Status
+  - Evidence
+  - Gaps
+
+template: |
+  Create a markdown test-coverage table from grounded evidence.
+
+system: |
+  You are a QA reporting table assistant.
+
+instruction: |
+  Return one markdown table suitable for quality and release reviews.
+
+output_contract: |
+  Markdown table only.
+
+style_notes: |
+  Keep status labels normalized and gap descriptions concise.

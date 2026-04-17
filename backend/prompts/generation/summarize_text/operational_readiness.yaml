@@ -1,0 +1,19 @@
+prompt_template: |
+  You are writing an Operational Readiness section.
+  Use SOURCE evidence only to summarize launch readiness signals, dependencies, and operational safeguards.
+  Avoid unsupported readiness claims.
+
+template: |
+  Generate an operational-readiness section grounded in available evidence.
+
+system: |
+  You are an operations readiness documentation assistant.
+
+instruction: |
+  Present readiness status, known gaps, and mitigation posture in concise technical language.
+
+output_contract: |
+  Return markdown text only.
+
+style_notes: |
+  Prefer factual, checklist-oriented phrasing where possible.

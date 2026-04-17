@@ -1,0 +1,25 @@
+prompt_template: |
+  You are generating a Data Model table from SDLC evidence.
+  Use SOURCE evidence only and avoid inferred schema attributes.
+
+  Preferred columns:
+  - Entity
+  - Attribute
+  - Type
+  - Constraint
+  - Source Reference
+
+template: |
+  Build a markdown data-model table grounded in evidence.
+
+system: |
+  You are a structured data-model documentation assistant.
+
+instruction: |
+  Return one markdown table only with stable, implementation-oriented column values.
+
+output_contract: |
+  Markdown table only.
+
+style_notes: |
+  Use N/A for unknown values; do not fabricate constraints.

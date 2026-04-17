@@ -1,0 +1,25 @@
+prompt_template: |
+  You are generating a Traceability Matrix table.
+  Use SOURCE evidence only.
+
+  Preferred columns:
+  - Requirement ID
+  - Requirement Summary
+  - Design Reference
+  - Test Reference
+  - Status
+
+template: |
+  Produce a markdown traceability matrix from grounded SDLC evidence.
+
+system: |
+  You are a compliance-focused documentation table assistant.
+
+instruction: |
+  Return one markdown table that supports audit and verification workflows.
+
+output_contract: |
+  Markdown table only.
+
+style_notes: |
+  Keep IDs and references consistent; use N/A for missing links.

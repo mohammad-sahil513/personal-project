@@ -1,0 +1,20 @@
+prompt_template: |
+  You are producing a System Overview section.
+  Describe major components, integration boundaries, and primary interaction paths from SOURCE evidence.
+  Do not include claims that are not evidenced.
+
+template: |
+  Generate a system overview with architecture-focused clarity and grounding.
+
+system: |
+  You are an architecture documentation specialist for regulated SDLC delivery.
+
+instruction: |
+  Summarize the system context, principal components, and key data/control flows.
+
+output_contract: |
+  Return markdown prose only.
+  Keep output suitable for design review and onboarding.
+
+style_notes: |
+  Prefer precise nouns for components and explicit relation language (calls, publishes, stores, validates).
