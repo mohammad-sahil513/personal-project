@@ -1,84 +1,133 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowRight, RefreshCw, AlertCircle } from 'lucide-react'
 import { ProgressBar } from '../components/progress/ProgressBar'
-import { useJobStore } from '../store/useJobStore'
-import { jobApi } from '../api/jobApi'
-import { outputApi } from '../api/outputApi'
+import { useJobStore, type DocType } from '../store/useJobStore'
+import { getWorkflowStatus, getWorkflow } from '../api/workflowApi'
 
-const STAGE_LABELS: Record<string, string> = {
-  ingestion: 'Ingesting document',
-  stage_8: 'Section segmentation',
-  stage_9: 'Knowledge extraction',
-  stage_10: 'Process graph construction',
-  stage_11: 'Validation',
-  stage_12: 'Chunking',
-  stage_13: 'Vector indexing',
-  template_resolution: 'Resolving template',
-  generation: 'Generating content',
-  pdd_generation: 'Generating PDD',
-  sdd_generation: 'Generating SDD',
-  uat_generation: 'Generating UAT',
-  completed: 'All done',
-}
-
-function formatStep(raw: string): string {
-  return STAGE_LABELS[raw] ?? raw.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+function backendStatusUi(s: string | undefined): 'running' | 'completed' | 'failed' {
+  const u = (s || '').toUpperCase()
+  if (u === 'FAILED') return 'failed'
+  if (u === 'COMPLETED') return 'completed'
+  return 'running'
 }
 
 export function ProgressPage() {
   const navigate = useNavigate()
   const {
-    jobId,
+    selectedDocs,
+    workflowRunByType,
     status,
     progress,
     currentStep,
     errorMessage,
+    perTypeProgress,
+    perTypeStep,
     setProgress,
     setStatus,
+    setPerTypeProgress,
     setDocuments,
     setActiveDoc,
     setError,
+    setWorkflowDetail,
     documents,
   } = useJobStore()
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  const poll = async () => {
-    if (!jobId) return
-    try {
-      const data = await jobApi.getProgress(jobId)
-      const step = formatStep(data.current_step)
-      setProgress(data.progress_percent, step)
-      setStatus(data.status)
+  const loadCompletedOutputs = useCallback(() => {
+    ;(async () => {
+      const { selectedDocs: docs, workflowRunByType: runs, setWorkflowDetail, setDocuments, setActiveDoc } =
+        useJobStore.getState()
+      const out: { type: DocType; sections: { section_id: string; title: string }[] }[] = []
+      for (const doc of docs) {
+        const runId = runs[doc]
+        if (!runId) continue
+        const w = await getWorkflow(runId)
+        setWorkflowDetail(doc, w)
+        out.push({
+          type: doc,
+          sections:
+            w.assembled_document?.sections?.map((s) => ({
+              section_id: s.section_id,
+              title: s.title,
+            })) ?? [],
+        })
+      }
+      setDocuments(out)
+      if (out.length > 0) setActiveDoc(out[0].type)
+    })().catch(() => {})
+  }, [])
 
-      if (data.status === 'completed') {
-        stopPolling()
-        // Load output structure
-        try {
-          const output = await outputApi.getDocuments(jobId)
-          setDocuments(output.documents)
-          if (output.documents.length > 0) {
-            setActiveDoc(output.documents[0].type)
-          }
-        } catch {
-          // Documents might load fine on output page
-        }
+  const poll = useCallback(async () => {
+    const { selectedDocs: docs, workflowRunByType: runs } = useJobStore.getState()
+    if (docs.length === 0) return
+    try {
+      const results = await Promise.all(
+        docs.map(async (doc) => {
+          const id = runs[doc]
+          if (!id) return { doc, st: null as Awaited<ReturnType<typeof getWorkflowStatus>> | null }
+          const st = await getWorkflowStatus(id)
+          return { doc, st }
+        })
+      )
+
+      const progressValues: number[] = []
+      const stepParts: string[] = []
+      let anyFailed = false
+
+      for (const { doc, st } of results) {
+        if (!st) continue
+        const p = st.overall_progress_percent ?? 0
+        progressValues.push(p)
+        const label = st.current_step_label || st.current_phase || '…'
+        stepParts.push(`${doc}: ${label}`)
+        setPerTypeProgress(doc, p, label)
+
+        const u = backendStatusUi(st.status)
+        if (u === 'failed') anyFailed = true
       }
 
-      if (data.status === 'failed') {
-        stopPolling()
-        setError('Pipeline failed. Please check your backend logs.')
+      const avgProgress = progressValues.length
+        ? Math.round(progressValues.reduce((sum, value) => sum + value, 0) / progressValues.length)
+        : 0
+
+      setProgress(avgProgress, stepParts.join(' · '))
+
+      if (anyFailed) {
+        const failedDoc = results.find(({ st }) => st && backendStatusUi(st.status) === 'failed')
+        setError(
+          failedDoc?.st
+            ? `Pipeline failed (${failedDoc.doc}). Check backend logs.`
+            : 'Pipeline failed. Check backend logs.'
+        )
+        setStatus('failed')
+        if (intervalRef.current) clearInterval(intervalRef.current)
+        intervalRef.current = null
+        return
+      }
+
+      const allCompleted =
+        results.length >= docs.length &&
+        results.every(({ st }) => st && backendStatusUi(st.status) === 'completed')
+
+      if (allCompleted && docs.every((d) => runs[d])) {
+        setStatus('completed')
+        await loadCompletedOutputs()
+        if (intervalRef.current) clearInterval(intervalRef.current)
+        intervalRef.current = null
+      } else {
+        setStatus('running')
       }
     } catch {
-      // Network hiccup — keep polling
+      // network hiccup
     }
-  }
+  }, [setProgress, setPerTypeProgress, setStatus, setError, loadCompletedOutputs])
 
-  const startPolling = () => {
+  const startPolling = useCallback(() => {
     poll()
     intervalRef.current = setInterval(poll, 2500)
-  }
+  }, [poll])
 
   const stopPolling = () => {
     if (intervalRef.current) {
@@ -88,23 +137,30 @@ export function ProgressPage() {
   }
 
   useEffect(() => {
-    if (!jobId) {
+    const { selectedDocs: docs, workflowRunByType: runs } = useJobStore.getState()
+    const hasRuns = docs.length > 0 && docs.every((d) => runs[d])
+    if (!hasRuns) {
       navigate('/')
       return
     }
-    if (status === 'running' || status === 'uploaded' || status === 'created') {
+    if (status === 'running') {
       startPolling()
-    } else if (status === 'completed') {
-      // Already completed (e.g. navigated back)
     }
     return () => stopPolling()
-  }, [jobId])
+  }, [navigate, status, startPolling])
+
+  useEffect(() => {
+    if (status === 'completed' && documents.length === 0) {
+      loadCompletedOutputs()
+    }
+  }, [status, documents.length, loadCompletedOutputs])
 
   const handleViewOutput = () => navigate('/output')
 
+  const docLabels = selectedDocs.length ? selectedDocs : (['PDD', 'SDD', 'UAT'] as DocType[])
+
   return (
     <div className="min-h-[calc(100vh-56px)] bg-white flex flex-col">
-      {/* Header band */}
       <div className="bg-black px-8 py-10">
         <div className="max-w-3xl mx-auto">
           <p className="font-body text-xs tracking-widest uppercase text-[#FFD400] mb-2 font-medium">
@@ -116,10 +172,8 @@ export function ProgressPage() {
         </div>
       </div>
 
-      {/* Main content */}
       <div className="flex-1 flex items-center justify-center px-8">
         <div className="w-full max-w-3xl py-20">
-
           {status === 'failed' ? (
             <div className="animate-fade-in">
               <div className="flex items-start gap-4 border border-red-200 bg-red-50 p-6 mb-8">
@@ -143,37 +197,59 @@ export function ProgressPage() {
             </div>
           ) : (
             <>
-              {/* Big doc labels */}
-              <div className="flex items-center gap-6 mb-12 animate-fade-in">
-                {['PDD', 'SDD', 'UAT'].map((doc) => (
-                  <div key={doc} className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full transition-colors duration-500 ${
-                      status === 'completed' ? 'bg-[#FFD400]' : 'bg-[#D0D0D0] animate-pulse'
-                    }`} />
-                    <span className="font-display font-bold text-lg uppercase text-black tracking-wide">
-                      {doc}
-                    </span>
-                  </div>
-                ))}
+              <div className="flex flex-wrap items-center gap-6 mb-12 animate-fade-in">
+                {docLabels.map((doc) => {
+                  const done = status === 'completed'
+                  const tp = perTypeProgress[doc]
+                  return (
+                    <div key={doc} className="flex items-center gap-2">
+                      <div
+                        className={`w-2 h-2 rounded-full transition-colors duration-500 ${
+                          done ? 'bg-[#FFD400]' : 'bg-[#D0D0D0] animate-pulse'
+                        }`}
+                      />
+                      <span className="font-display font-bold text-lg uppercase text-black tracking-wide">
+                        {doc}
+                      </span>
+                      {tp !== undefined && status === 'running' && (
+                        <span className="font-body text-xs text-[#999]">{tp}%</span>
+                      )}
+                    </div>
+                  )
+                })}
               </div>
 
-              {/* Progress bar */}
               <ProgressBar />
 
-              {/* Elapsed hint */}
+              {status === 'running' && (
+                <div className="mt-4 space-y-1 font-body text-xs text-[#6B6B6B] max-h-24 overflow-y-auto">
+                  {selectedDocs.map((doc) =>
+                    perTypeStep[doc] ? (
+                      <p key={doc}>
+                        <span className="font-semibold text-black">{doc}:</span> {perTypeStep[doc]}
+                      </p>
+                    ) : null
+                  )}
+                </div>
+              )}
+
               {status === 'running' && progress < 100 && (
                 <p className="font-body text-xs text-[#C0C0C0] mt-6 animate-fade-in">
-                  This may take a few minutes depending on document length and selected models.
+                  {currentStep || 'This may take a few minutes depending on document length.'}
                 </p>
               )}
 
-              {/* CTA when complete */}
               {status === 'completed' && (
                 <div className="mt-12 animate-slide-up">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-6 h-6 bg-[#FFD400] flex items-center justify-center">
                       <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
-                        <path d="M1 5L4.5 8.5L11 1" stroke="#000" strokeWidth="2" strokeLinecap="square"/>
+                        <path
+                          d="M1 5L4.5 8.5L11 1"
+                          stroke="#000"
+                          strokeWidth="2"
+                          strokeLinecap="square"
+                        />
                       </svg>
                     </div>
                     <span className="font-display font-bold text-xl uppercase tracking-wide text-black">
@@ -191,7 +267,6 @@ export function ProgressPage() {
               )}
             </>
           )}
-
         </div>
       </div>
     </div>

@@ -5,41 +5,77 @@ import { DocumentTabs } from '../components/output/DocumentTabs'
 import { SectionSidebar } from '../components/output/SectionSidebar'
 import { DocxViewer } from '../components/output/DocxViewer'
 import { DownloadPanel } from '../components/output/DownloadPanel'
-import { useJobStore, DocType } from '../store/useJobStore'
-import { outputApi } from '../api/outputApi'
+import { useJobStore, type DocType } from '../store/useJobStore'
+import { getWorkflow } from '../api/workflowApi'
 
 export function OutputPage() {
   const navigate = useNavigate()
-  const { jobId, status, documents, activDoc, setDocuments, setActiveDoc } = useJobStore()
+  const {
+    selectedDocs,
+    workflowRunByType,
+    documents,
+    setDocuments,
+    setWorkflowDetail,
+    setActiveDoc,
+    setActiveSectionId,
+    setSectionContent,
+  } = useJobStore()
 
-  // Guard — redirect if no job
   useEffect(() => {
-    if (!jobId) {
+    const hasRuns = selectedDocs.some((d) => workflowRunByType[d])
+    if (!hasRuns) {
       navigate('/')
       return
     }
 
-    // If documents haven't been loaded yet (e.g., navigated directly)
-    if (documents.length === 0 && status === 'completed') {
-      outputApi.getDocuments(jobId)
-        .then((data) => {
-          setDocuments(data.documents)
-          if (data.documents.length > 0 && !activDoc) {
-            setActiveDoc(data.documents[0].type as DocType)
-          }
+    let cancelled = false
+    ;(async () => {
+      const docs: { type: DocType; sections: { section_id: string; title: string }[] }[] = []
+      for (const doc of selectedDocs) {
+        const runId = workflowRunByType[doc]
+        if (!runId) continue
+        const w = await getWorkflow(runId)
+        if (cancelled) return
+        setWorkflowDetail(doc, w)
+        docs.push({
+          type: doc,
+          sections:
+            w.assembled_document?.sections?.map((s) => ({
+              section_id: s.section_id,
+              title: s.title,
+            })) ?? [],
         })
-        .catch(() => {})
-    }
+      }
+      if (cancelled) return
+      setDocuments(docs)
+      if (docs.length > 0) {
+        const firstType = docs[0].type
+        setActiveDoc(firstType)
+        const wf = useJobStore.getState().workflowDetailByType[firstType]
+        const sec = wf?.assembled_document?.sections?.[0]
+        if (sec) {
+          setActiveSectionId(sec.section_id)
+          setSectionContent(sec.content ?? '_No content for this section._')
+        }
+      }
+    })().catch(() => {})
 
-    // If we do have docs but no active tab, set first
-    if (documents.length > 0 && !activDoc) {
-      setActiveDoc(documents[0].type as DocType)
+    return () => {
+      cancelled = true
     }
-  }, [jobId])
+  }, [
+    navigate,
+    selectedDocs,
+    workflowRunByType,
+    setDocuments,
+    setWorkflowDetail,
+    setActiveDoc,
+    setActiveSectionId,
+    setSectionContent,
+  ])
 
   return (
     <div className="h-[calc(100vh-56px)] flex flex-col bg-white">
-      {/* Top bar */}
       <div className="flex items-center justify-between px-8 py-5 border-b border-[#E5E5E5] bg-white shrink-0">
         <div>
           <p className="font-body text-[10px] tracking-widest uppercase text-[#999] font-medium mb-1">
@@ -58,27 +94,22 @@ export function OutputPage() {
         </button>
       </div>
 
-      {/* Document tabs */}
       {documents.length > 0 && (
         <div className="px-8 bg-white shrink-0">
           <DocumentTabs />
         </div>
       )}
 
-      {/* Body: sidebar + viewer */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Left sidebar */}
         <div className="w-56 shrink-0 border-r border-[#E5E5E5] overflow-y-auto bg-white">
           <SectionSidebar />
         </div>
 
-        {/* Document viewer */}
         <div className="flex-1 flex flex-col overflow-hidden">
           <DocxViewer />
         </div>
       </div>
 
-      {/* Download bar */}
       <DownloadPanel />
     </div>
   )

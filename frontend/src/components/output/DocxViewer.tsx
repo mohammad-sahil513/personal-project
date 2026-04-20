@@ -14,7 +14,7 @@ function MarkdownPage({ content }: { content: string }) {
 }
 
 export function DocxViewer() {
-  const { sectionContent, sectionLoading, activeSectionId } = useJobStore()
+  const { sectionContent, activeSectionId } = useJobStore()
 
   if (!activeSectionId) {
     return (
@@ -28,26 +28,6 @@ export function DocxViewer() {
         <p className="font-body text-sm text-[#999] max-w-xs">
           Choose a section from the left panel to view generated content.
         </p>
-      </div>
-    )
-  }
-
-  if (sectionLoading) {
-    return (
-      <div className="bg-[#F4F4F4] flex-1 overflow-y-auto py-10 px-6">
-        <div className="bg-white w-full max-w-[820px] mx-auto shadow-[0_1px_4px_rgba(0,0,0,0.08)] px-16 py-14">
-          {/* Skeleton */}
-          <div className="space-y-4 animate-pulse">
-            <div className="h-7 bg-[#E5E5E5] w-2/3" />
-            <div className="h-3 bg-[#E5E5E5] w-full" />
-            <div className="h-3 bg-[#E5E5E5] w-5/6" />
-            <div className="h-3 bg-[#E5E5E5] w-4/6" />
-            <div className="h-5 bg-[#E5E5E5] w-1/2 mt-6" />
-            <div className="h-3 bg-[#E5E5E5] w-full" />
-            <div className="h-3 bg-[#E5E5E5] w-3/4" />
-            <div className="h-24 bg-[#E5E5E5] w-full mt-4" />
-          </div>
-        </div>
       </div>
     )
   }

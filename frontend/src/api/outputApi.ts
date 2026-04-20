@@ -1,37 +1,14 @@
-import client from './client'
-import { DocumentOutput, DocType } from '../store/useJobStore'
+import { baseURL } from './client'
 
-export interface SectionContent {
-  content: string
-  evidence?: {
-    sources?: string[]
-    graph?: string[]
-    guidelines?: string[]
+function downloadUrl(path: string): string {
+  if (baseURL.startsWith('http')) {
+    return `${baseURL.replace(/\/$/, '')}${path}`
   }
+  return `${window.location.origin}${baseURL.replace(/\/$/, '')}${path}`
 }
 
 export const outputApi = {
-  getDocuments: async (jobId: string): Promise<{ documents: DocumentOutput[] }> => {
-    const res = await client.get(`/jobs/${jobId}/documents`)
-    return res.data
-  },
-
-  getSectionContent: async (
-    jobId: string,
-    docType: DocType,
-    sectionId: string
-  ): Promise<SectionContent> => {
-    const res = await client.get<SectionContent>(
-      `/jobs/${jobId}/documents/${docType}/sections/${sectionId}`
-    )
-    return res.data
-  },
-
-  downloadAll: (jobId: string) => {
-    window.open(`http://localhost:8001/jobs/${jobId}/download/all`, '_blank')
-  },
-
-  downloadDoc: (jobId: string, docType: DocType) => {
-    window.open(`http://localhost:8001/jobs/${jobId}/download/${docType.toLowerCase()}`, '_blank')
+  downloadByOutputId: (outputId: string) => {
+    window.open(downloadUrl(`/outputs/${outputId}/download`), '_blank')
   },
 }

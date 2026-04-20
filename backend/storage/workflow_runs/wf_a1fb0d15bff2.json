@@ -1,0 +1,79 @@
+{
+  "workflow_run_id": "wf_a1fb0d15bff2",
+  "status": "FAILED",
+  "current_phase": "INGESTION",
+  "overall_progress_percent": 5,
+  "document_id": "doc_ade2cd625271",
+  "template_id": "tpl_7afc4d3f7bad",
+  "output_id": null,
+  "created_at": "2026-04-20T02:32:25.887555+00:00",
+  "updated_at": "2026-04-20T02:32:37.747601+00:00",
+  "started_at": "2026-04-20T02:32:25.940126+00:00",
+  "completed_at": null,
+  "phases": [
+    {
+      "phase": "INPUT_PREPARATION",
+      "status": "COMPLETED",
+      "progress_percent": 100,
+      "weight": 5
+    },
+    {
+      "phase": "INGESTION",
+      "status": "NOT_STARTED",
+      "progress_percent": 0,
+      "weight": 35
+    },
+    {
+      "phase": "TEMPLATE_PREPARATION",
+      "status": "NOT_STARTED",
+      "progress_percent": 0,
+      "weight": 10
+    },
+    {
+      "phase": "SECTION_PLANNING",
+      "status": "NOT_STARTED",
+      "progress_percent": 0,
+      "weight": 5
+    },
+    {
+      "phase": "RETRIEVAL",
+      "status": "NOT_STARTED",
+      "progress_percent": 0,
+      "weight": 15
+    },
+    {
+      "phase": "GENERATION",
+      "status": "NOT_STARTED",
+      "progress_percent": 0,
+      "weight": 20
+    },
+    {
+      "phase": "ASSEMBLY_VALIDATION",
+      "status": "NOT_STARTED",
+      "progress_percent": 0,
+      "weight": 5
+    },
+    {
+      "phase": "RENDER_EXPORT",
+      "status": "NOT_STARTED",
+      "progress_percent": 0,
+      "weight": 5
+    }
+  ],
+  "execution_refs": {
+    "INGESTION": "exec_c2b6d91d431f"
+  },
+  "section_plan": null,
+  "section_progress": null,
+  "section_retrieval_results": null,
+  "section_generation_results": null,
+  "assembled_document": null,
+  "observability_summary": null,
+  "warnings": [],
+  "errors": [
+    {
+      "code": "INGESTION_RUNTIME_INIT_FAILED",
+      "message": "Failed to build ingestion runtime from live wiring."
+    }
+  ]
+}

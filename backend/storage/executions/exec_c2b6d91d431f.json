@@ -1,0 +1,15 @@
+{
+  "execution_id": "exec_c2b6d91d431f",
+  "workflow_run_id": "wf_a1fb0d15bff2",
+  "document_id": "doc_ade2cd625271",
+  "type": "INGESTION",
+  "status": "RUNNING",
+  "current_stage": "01_UPLOAD_AND_DEDUP",
+  "completed_stages": 0,
+  "total_stages": 9,
+  "created_at": "2026-04-20T02:32:25.957643+00:00",
+  "updated_at": "2026-04-20T02:32:25.996218+00:00",
+  "warnings": [],
+  "errors": [],
+  "artifacts": []
+}

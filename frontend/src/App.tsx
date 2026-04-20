@@ -4,6 +4,7 @@ import { UploadPage } from './pages/UploadPage'
 import { ProgressPage } from './pages/ProgressPage'
 import { OutputPage } from './pages/OutputPage'
 import { TemplatesPage } from './pages/TemplatesPage'
+import { TemplatePreviewPage } from './pages/TemplatePreviewPage'
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
           <Route path="/progress"  element={<ProgressPage />} />
           <Route path="/output"    element={<OutputPage />} />
           <Route path="/templates" element={<TemplatesPage />} />
+          <Route path="/templates/:templateId/preview" element={<TemplatePreviewPage />} />
         </Routes>
       </div>
     </BrowserRouter>

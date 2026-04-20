@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, BackgroundTasks, Depends, UploadFile, File, Form
 from fastapi.responses import FileResponse
+from fastapi import Response
 
 from backend.api.dependencies import get_api_logger
 from backend.api.schemas.template import TemplateCompileRequest
@@ -75,6 +76,25 @@ async def list_templates(
     )
 
 
+@router.delete("/{template_id}")
+async def delete_template(
+    template_id: str,
+    logger=Depends(get_api_logger),
+) -> dict:
+    service = TemplateAppService()
+    service.delete_template(template_id)
+
+    logger.info(
+        "Template deleted via API",
+        extra={"template_id": template_id},
+    )
+
+    return success_response(
+        message="Template deleted successfully",
+        data={"template_id": template_id, "deleted": True},
+    )
+
+
 @router.get("/{template_id}")
 async def get_template(
     template_id: str,
@@ -91,6 +111,28 @@ async def get_template(
     return success_response(
         message="Template fetched successfully",
         data=item.to_dict(),
+    )
+
+
+@router.get("/{template_id}/download")
+async def download_template_binary(
+    template_id: str,
+    logger=Depends(get_api_logger),
+):
+    service = TemplateAppService()
+    item = service.get_template(template_id)
+    data = service.get_template_bytes(template_id)
+
+    logger.info(
+        "Template binary download requested",
+        extra={"template_id": template_id},
+    )
+
+    filename = item.filename or f"{template_id}.docx"
+    return Response(
+        content=data,
+        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        headers={"Content-Disposition": f'inline; filename="{filename}"'},
     )
 
 

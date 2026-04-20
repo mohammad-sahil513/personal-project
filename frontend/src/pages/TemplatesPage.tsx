@@ -26,7 +26,7 @@ export function TemplatesPage() {
       const data = await templateApi.listTemplates()
       setTemplates(data)
     } catch {
-      setError('Could not load templates. Is the backend running on localhost:8001?')
+      setError('Could not load templates. Is the backend running (see VITE_API_BASE / Vite proxy)?')
     } finally {
       setLoading(false)
     }
@@ -35,7 +35,9 @@ export function TemplatesPage() {
   useEffect(() => { fetchTemplates() }, [fetchTemplates])
 
   const byType = (type: DocType) =>
-    templates.filter((t) => (t.type ?? '').toUpperCase() === type)
+    templates.filter(
+      (t) => ((t.template_type || t.type) ?? '').toUpperCase() === type
+    )
 
   return (
     <div className="min-h-[calc(100vh-56px)] bg-white">

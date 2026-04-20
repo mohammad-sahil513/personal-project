@@ -1,11 +1,15 @@
-import { Download, Package } from 'lucide-react'
-import { useJobStore, DocType } from '../../store/useJobStore'
+import { Download } from 'lucide-react'
+import { useJobStore, type DocType } from '../../store/useJobStore'
 import { outputApi } from '../../api/outputApi'
 
 export function DownloadPanel() {
-  const { jobId, documents } = useJobStore()
+  const { documents, workflowDetailByType } = useJobStore()
 
-  if (!jobId) return null
+  const hasAnyOutput = documents.some(
+    (d) => workflowDetailByType[d.type as DocType]?.output_id
+  )
+
+  if (!documents.length) return null
 
   return (
     <div className="border-t border-[#E5E5E5] bg-white px-6 py-4 flex items-center gap-4 flex-wrap">
@@ -13,26 +17,34 @@ export function DownloadPanel() {
         Download
       </span>
 
-      {/* Download All ZIP */}
-      <button
-        onClick={() => outputApi.downloadAll(jobId)}
-        className="flex items-center gap-2 bg-black text-white px-4 py-2 hover:bg-[#1A1A1A] transition-colors"
-      >
-        <Package size={14} color="#FFD400" />
-        <span className="font-body text-xs font-medium">All Documents (ZIP)</span>
-      </button>
+      {documents.map(({ type }) => {
+        const oid = workflowDetailByType[type as DocType]?.output_id
+        const ready =
+          (workflowDetailByType[type as DocType]?.status || '').toUpperCase() === 'COMPLETED' &&
+          Boolean(oid)
+        return (
+          <button
+            key={type}
+            type="button"
+            disabled={!ready}
+            onClick={() => oid && outputApi.downloadByOutputId(oid)}
+            className={`flex items-center gap-2 border px-4 py-2 transition-colors ${
+              ready
+                ? 'border-[#E5E5E5] bg-white text-black hover:border-black'
+                : 'border-[#F0F0F0] text-[#C0C0C0] cursor-not-allowed'
+            }`}
+          >
+            <Download size={13} color={ready ? '#6B6B6B' : '#E5E5E5'} />
+            <span className="font-body text-xs font-medium">{type} (DOCX)</span>
+          </button>
+        )
+      })}
 
-      {/* Individual downloads */}
-      {documents.map(({ type }) => (
-        <button
-          key={type}
-          onClick={() => outputApi.downloadDoc(jobId, type as DocType)}
-          className="flex items-center gap-2 border border-[#E5E5E5] bg-white text-black px-4 py-2 hover:border-black transition-colors"
-        >
-          <Download size={13} color="#6B6B6B" />
-          <span className="font-body text-xs font-medium">{type}</span>
-        </button>
-      ))}
+      {!hasAnyOutput && (
+        <span className="font-body text-xs text-[#999]">
+          Outputs appear when the workflow status is completed and an output_id is present.
+        </span>
+      )}
     </div>
   )
 }

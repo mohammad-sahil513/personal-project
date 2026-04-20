@@ -1,9 +1,29 @@
-import { useJobStore, DocType } from '../../store/useJobStore'
+import { useJobStore, type DocType } from '../../store/useJobStore'
 
 export function DocumentTabs() {
-  const { documents, activDoc, setActiveDoc } = useJobStore()
+  const {
+    documents,
+    activDoc,
+    setActiveDoc,
+    workflowDetailByType,
+    setActiveSectionId,
+    setSectionContent,
+  } = useJobStore()
 
   if (!documents.length) return null
+
+  const selectTab = (type: DocType) => {
+    setActiveDoc(type)
+    const w = workflowDetailByType[type]
+    const first = w?.assembled_document?.sections?.[0]
+    if (first) {
+      setActiveSectionId(first.section_id)
+      setSectionContent(first.content ?? '_No content for this section._')
+    } else {
+      setActiveSectionId(null)
+      setSectionContent(null)
+    }
+  }
 
   return (
     <div className="flex items-end border-b border-[#E5E5E5]">
@@ -12,7 +32,8 @@ export function DocumentTabs() {
         return (
           <button
             key={type}
-            onClick={() => setActiveDoc(type as DocType)}
+            type="button"
+            onClick={() => selectTab(type as DocType)}
             className={`relative px-8 py-4 font-display font-bold text-base uppercase tracking-widest transition-colors ${
               active
                 ? 'text-black border-b-2 border-black -mb-px'

@@ -44,9 +44,10 @@ export function TemplateCard({ template, onDeleted }: Props) {
                   {template.is_custom ? 'Custom' : 'Standard'}
                 </span>
               </div>
-              <h4 className="font-display font-bold text-xl uppercase tracking-wide text-black leading-tight truncate">
-                {template.id}
+              <h4 className="font-display font-bold text-lg uppercase tracking-wide text-black leading-tight truncate">
+                {template.filename}
               </h4>
+              <p className="font-body text-[10px] text-[#999] truncate">{template.template_id}</p>
             </div>
           </div>
 
@@ -118,7 +119,6 @@ export function TemplateCard({ template, onDeleted }: Props) {
           )}
         </div>
       </div>
-
       {showPreview && (
         <TemplatePreviewModal
           template={template}

@@ -1,6 +1,7 @@
 import { useRef, useState, DragEvent, ChangeEvent } from 'react'
 import { Upload, X, FileText, Plus, Check } from 'lucide-react'
 import { templateApi } from '../../api/templateApi'
+import { getApiErrorMessage } from '../../api/errors'
 
 const DOC_TYPES = ['PDD', 'SDD', 'UAT'] as const
 type DocType = typeof DOC_TYPES[number]
@@ -12,7 +13,6 @@ interface Props {
 export function AddTemplatePanel({ onSuccess }: Props) {
   const [selectedType, setSelectedType] = useState<DocType | null>(null)
   const [file, setFile] = useState<File | null>(null)
-  const [description, setDescription] = useState('')
   const [isDragging, setIsDragging] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -49,19 +49,17 @@ export function AddTemplatePanel({ onSuccess }: Props) {
     try {
       await templateApi.uploadTemplate({
         file,
-        doc_type: selectedType,
-        description,
+        template_type: selectedType,
       })
       setSuccess(true)
       setTimeout(() => {
         setSuccess(false)
         setFile(null)
         setSelectedType(null)
-        setDescription('')
         onSuccess()
       }, 1500)
-    } catch (err: any) {
-      setError(err?.response?.data?.detail ?? 'Upload failed. Check backend logs.')
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, 'Upload failed. Check backend logs.'))
     } finally {
       setUploading(false)
     }
@@ -105,21 +103,7 @@ export function AddTemplatePanel({ onSuccess }: Props) {
           </div>
         </div>
 
-        {/* Step 2: Description */}
-        <div>
-          <label className="font-body text-[10px] tracking-widest uppercase text-[#6B6B6B] font-medium block mb-2">
-            Description <span className="text-[#C0C0C0] normal-case tracking-normal">(optional)</span>
-          </label>
-          <input
-            type="text"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="e.g. Custom SDD for financial systems"
-            className="w-full border border-[#E5E5E5] px-4 py-2.5 font-body text-sm text-black placeholder:text-[#C0C0C0] focus:outline-none focus:border-black transition-colors"
-          />
-        </div>
-
-        {/* Step 3: File drop */}
+        {/* Step 2: File drop */}
         <div>
           <label className="font-body text-[10px] tracking-widest uppercase text-[#6B6B6B] font-medium block mb-2">
             Template File (DOCX)

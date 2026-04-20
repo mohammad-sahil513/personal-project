@@ -220,3 +220,23 @@ def test_get_output(MockOutService, client):
     response = client.get(url)
     assert response.status_code == 200
     assert response.json()["data"]["output_id"] == "out_1"
+
+
+# ---------------------------------------------------------------------------
+# Template delete
+# ---------------------------------------------------------------------------
+@patch("backend.api.routes.template_routes.TemplateAppService")
+def test_delete_template(MockTplService, client):
+    mock_instance = MockTplService.return_value
+    mock_instance.delete_template.return_value = True
+
+    settings = get_settings()
+    url = f"{settings.api_prefix}/templates/tpl_del_1"
+    response = client.delete(url)
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["success"] is True
+    assert body["data"]["deleted"] is True
+    assert body["data"]["template_id"] == "tpl_del_1"
+    mock_instance.delete_template.assert_called_once_with("tpl_del_1")

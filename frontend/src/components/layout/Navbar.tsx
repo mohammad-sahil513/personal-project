@@ -4,12 +4,14 @@ import { useJobStore } from '../../store/useJobStore'
 export function Navbar() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { status, reset } = useJobStore()
+  const { status, workflowRunByType, reset } = useJobStore()
+
+  const hasWorkflowRuns = Object.values(workflowRunByType).some(Boolean)
 
   const jobSteps = [
-    { label: '01 UPLOAD',   path: '/' },
+    { label: '01 UPLOAD', path: '/' },
     { label: '02 GENERATE', path: '/progress' },
-    { label: '03 REVIEW',   path: '/output' },
+    { label: '03 REVIEW', path: '/output' },
   ]
 
   const handleLogo = () => {
@@ -21,7 +23,6 @@ export function Navbar() {
 
   return (
     <nav className="bg-black text-white h-14 flex items-center px-8 sticky top-0 z-50 gap-8">
-      {/* Logo */}
       <button onClick={handleLogo} className="flex items-center gap-2 group mr-auto">
         <div className="w-7 h-7 bg-[#FFD400] flex items-center justify-center shrink-0">
           <span className="font-display font-bold text-black text-xs leading-none">AI</span>
@@ -31,7 +32,6 @@ export function Navbar() {
         </span>
       </button>
 
-      {/* Templates link — always accessible */}
       <button
         onClick={() => navigate('/templates')}
         className={`font-body text-xs font-medium tracking-widest transition-colors border-b-2 pb-0.5 ${
@@ -43,29 +43,29 @@ export function Navbar() {
         TEMPLATES
       </button>
 
-      {/* Divider */}
       <div className="w-px h-4 bg-white/20" />
 
-      {/* Job flow steps */}
       {jobSteps.map((step, i) => {
         const active = location.pathname === step.path && !isTemplatesPage
         const isAccessible =
           step.path === '/' ||
           (step.path === '/progress' &&
-            ['created', 'uploaded', 'running', 'completed', 'failed'].includes(status)) ||
+            hasWorkflowRuns &&
+            ['running', 'completed', 'failed'].includes(status)) ||
           (step.path === '/output' && status === 'completed')
 
         return (
           <button
             key={i}
+            type="button"
             onClick={() => isAccessible && navigate(step.path)}
             disabled={!isAccessible}
             className={`font-body text-xs font-medium tracking-widest transition-colors ${
               active
                 ? 'text-[#FFD400]'
                 : isAccessible
-                ? 'text-white/50 hover:text-white/80'
-                : 'text-white/20 cursor-not-allowed'
+                  ? 'text-white/50 hover:text-white/80'
+                  : 'text-white/20 cursor-not-allowed'
             }`}
           >
             {step.label}

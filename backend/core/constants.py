@@ -11,7 +11,12 @@ DEFAULT_LOG_LEVEL: str = "INFO"
 DEFAULT_HOST: str = "127.0.0.1"
 DEFAULT_PORT: int = 8000
 
-DEFAULT_CORS_ORIGINS: list[str] = ["http://localhost:3000"]
+DEFAULT_CORS_ORIGINS: list[str] = [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:5173",
+]
 
 DEFAULT_STORAGE_ROOT: str = "backend/storage"
 DEFAULT_WORKFLOW_RUNS_DIR: str = "workflow_runs"

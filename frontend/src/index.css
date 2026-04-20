@@ -187,3 +187,14 @@
   border-color: #FFD400 !important;
   background: rgba(255, 212, 0, 0.04) !important;
 }
+
+/* ── Template DOCX popup preview ───────────────────────── */
+.docx-preview-host .docx-wrapper {
+  background: #f0f0f0 !important;
+  padding: 12px 0 !important;
+}
+
+.docx-preview-host .docx {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  margin-bottom: 12px !important;
+}
