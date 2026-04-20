@@ -9,6 +9,7 @@ React + TypeScript + Vite + Tailwind UI for the document generation workflow. It
 - Zustand for client state
 - Axios (`baseURL` from `VITE_API_BASE`, default `/api`)
 - react-markdown + remark-gfm (section preview)
+- docx-preview (template DOCX popup preview)
 - lucide-react
 
 ## Setup
@@ -47,6 +48,8 @@ Responses use `{ success, message, data, ... }`; the client interceptor exposes 
 Templates:
 
 - `GET /api/templates` → `{ items, total }`
+- `GET /api/templates/{template_id}` → template metadata
+- `GET /api/templates/{template_id}/download` → raw uploaded template `.docx` (used by popup preview)
 - `POST /api/templates/upload` — form fields `file`, `template_type` (e.g. `PDD` / `SDD` / `UAT`), optional `version`
 - `DELETE /api/templates/{template_id}` — remove template (metadata + `.docx` binary when present)
 
@@ -57,14 +60,22 @@ Templates:
 | `/` | Upload BRD, select output types, pick one template per type |
 | `/progress` | Aggregated progress for all workflow runs |
 | `/output` | Tabs per deliverable, section sidebar, markdown viewer, per-type DOCX download |
-| `/templates` | Template library + upload |
+| `/templates` | Template library + upload + popup template preview |
+
+## Template UX Notes
+
+- Upload page template section is **selection-only** (no inline template upload tile).
+- Templates are uploaded from `/templates`, then selected on `/`.
+- Both template library and upload selection provide **Preview** that opens a popup modal.
+- Popup preview renders the **actual DOCX layout** and includes collapsible metadata (hidden by default).
 
 ## Manual test checklist
 
 1. Start backend on the proxied port (default 8000).
 2. `npm run dev` in `frontend/`.
-3. Upload a PDF/DOCX, ensure each selected PDD/SDD/UAT has a template (upload templates on `/templates` if needed).
-4. Generate → progress → review → download DOCX when `output_id` is present.
+3. Upload template(s) on `/templates`, and verify Preview opens a popup with DOCX rendering.
+4. Upload a PDF/DOCX on `/`, ensure each selected PDD/SDD/UAT has a selected template.
+5. Generate → progress → review → download DOCX when `output_id` is present.
 
 ## Notes
 

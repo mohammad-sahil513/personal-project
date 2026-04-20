@@ -68,6 +68,9 @@ This document maps API endpoints to workflow stages and internal service flows.
   - Stage relation: pre-workflow template setup.
 - `GET /templates`
 - `GET /templates/{template_id}`
+- `GET /templates/{template_id}/download`
+  - Purpose: download raw uploaded template DOCX (used by frontend preview popup).
+  - Stage relation: pre-workflow template inspection.
 - `POST /templates/{template_id}/compile`
   - Purpose: async template compile dispatch.
   - Stage relation: template preparation.

@@ -34,8 +34,25 @@ This folder is the central documentation hub for the backend project.
 - `PROJECT_DIAGRAMS_MASTER_GUIDE.md` - Full diagram strategy and templates.
 - `diagrams/` - Concrete architecture and flow diagrams (`01` to `16`).
 
+### Dependency and Gap Reports
+- `GAPS_AND_MISMATCHES_REPORT.md` - Practical gaps and known risks/mismatches summary.
+- `dependency-reports/README.md` - Index for detailed upstream/downstream dependency reports.
+- `dependency-reports/00_SYSTEM_DEPENDENCY_OVERVIEW.md` - Cross-module system dependency map.
+- `dependency-reports/01_INGESTION_DEPENDENCY_REPORT.md` - Ingestion-centric dependency and artifact report.
+- `dependency-reports/02_TEMPLATE_PLANNING_RETRIEVAL_REPORT.md` - Template, planning, and retrieval dependency report.
+- `dependency-reports/03_GENERATION_ASSEMBLY_EXPORT_REPORT.md` - Generation, assembly, and export dependency report.
+- `dependency-reports/04_PRACTICAL_GAPS_AND_RISKS_APPENDIX.md` - Consolidated practical gaps, mismatches, and actions.
+
 ## Scope Note
 
 The file catalogs in this documentation focus on project source/runtime areas.
 They intentionally exclude dependency/vendor paths such as `.venv`, and runtime
 generated data folders such as `storage` snapshots.
+
+## Recent API / UX Updates
+
+- Template preview in frontend now renders the actual uploaded DOCX in a popup modal.
+- A supporting endpoint is available for template binary download:
+  - `GET /api/templates/{template_id}/download`
+- Template selection on upload flow is now library-only (templates are uploaded via `/templates` page).
+- Local CORS defaults include both `localhost` and `127.0.0.1` for ports `3000` and `5173`.
